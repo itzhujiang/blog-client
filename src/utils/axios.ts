@@ -48,7 +48,10 @@ instance.interceptors.response.use(
     return res.data;
   },
   err => {
-    if (err.response.data.code === 401) {
+    if (err.response.status === 500) {
+      message.error('服务器异常');
+    }
+    if (err.response.status === 401) {
       message.error('权限不通，请重新登录');
       localStorage.removeItem(TOKEN);
       location.pathname = '/';
