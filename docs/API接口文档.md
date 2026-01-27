@@ -503,7 +503,7 @@
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|:----:|------|
 | id | number | 是 | 评论ID |
-| status | string | 是 | 状态：pending/approved/spam/trash |
+| status | string | 是 | 状态：approved/spam/trash |
 
 **成功响应：**
 ```json

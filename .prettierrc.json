@@ -12,7 +12,7 @@
   "arrowParens": "avoid",
   "htmlWhitespaceSensitivity": "css",
   "vueIndentScriptAndStyle": false,
-  "endOfLine": "lf",
+  "endOfLine": "auto",
   "embeddedLanguageFormatting": "auto",
   "insertPragma": false,
   "requirePragma": false,

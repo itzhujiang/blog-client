@@ -13,22 +13,22 @@
 </template>
 
 <script setup lang="ts">
-import IconComp from '@/components/Icon/index.vue'
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import {useUserStore} from '@/store/useUserStore';
+
+import IconComp from '@/components/Icon/index.vue';
+import { useUserStore } from '@/store/useUserStore';
 
 const { logout } = useUserStore();
 
 const route = useRoute();
 
-const curRoute = computed(() => route.meta.title)
-
+const curRoute = computed(() => route.meta.title);
 </script>
 
 <style lang="less" scoped>
 @import '@/styles/var.less';
-.head-overview-container{
+.head-overview-container {
   width: 100%;
   height: 60px;
   background-color: @white;
@@ -37,9 +37,9 @@ const curRoute = computed(() => route.meta.title)
   display: flex;
   justify-content: space-between;
   box-sizing: border-box;
-  .overview-left{
+  .overview-left {
     display: flex;
-    .icon{
+    .icon {
       color: @gray;
     }
     .text {
@@ -47,10 +47,9 @@ const curRoute = computed(() => route.meta.title)
       color: @gray;
     }
   }
-  .logout{
+  .logout {
     cursor: pointer;
     color: @text;
   }
- 
 }
 </style>

@@ -2,19 +2,22 @@
   <div class="login-container">
     <div class="main">
       <h1 class="title">后台系统</h1>
-       <FormComp ref="formCompRef" :config="config"></FormComp>
+      <FormComp ref="formCompRef" :config="config"></FormComp>
       <AButton type="primary" @click="onLoginClick">登录</AButton>
     </div>
   </div>
- 
 </template>
 
 <script setup lang="ts">
-import { FormComp, createFormConfig } from '@/components/Comp/index';
 import { ref } from 'vue';
-import { useUserStore } from '@/store/useUserStore';
-import type {LoginRequestType} from '@/api/user';
 
+import type { LoginRequestType } from '@/api/user';
+import { FormComp, createFormConfig } from '@/components/Comp/index';
+import { useUserStore } from '@/store/useUserStore';
+
+defineOptions({
+  name: 'login-index',
+});
 
 const { login } = useUserStore();
 const formCompRef = ref<InstanceType<typeof FormComp>>();
@@ -29,7 +32,7 @@ const config = createFormConfig({
       type: 'input',
       dataIndex: 'username',
       placeholder: '请输入账号',
-      rules: [{ required: true, message: '请输入账号' }]
+      rules: [{ required: true, message: '请输入账号' }],
     },
     {
       label: '密码',
@@ -37,32 +40,32 @@ const config = createFormConfig({
       dataIndex: 'password',
       placeholder: '请输入密码',
       inputType: 'password',
-      rules: [{ required: true, message: '请输入密码' }]
-    }
-  ]
-})
+      rules: [{ required: true, message: '请输入密码' }],
+    },
+  ],
+});
 
 /**
  * 点击登录
  */
-const onLoginClick = async ()=> {
+const onLoginClick = async () => {
   try {
-    await formCompRef.value?.getRef()?.validate()
-   
-    const data = formCompRef.value?.getFormState() as LoginRequestType | undefined
+    await formCompRef.value?.getRef()?.validate();
+
+    const data = formCompRef.value?.getFormState() as LoginRequestType | undefined;
     if (data) {
-      await login(data)
+      await login(data);
     }
     console.log(data);
   } catch (error) {
     console.error(error);
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
-@import "@/styles/var.less";
-.login-container{
+@import '@/styles/var.less';
+.login-container {
   width: 100vw;
   height: 100vh;
   min-height: 600px;

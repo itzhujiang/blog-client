@@ -30,6 +30,11 @@ export interface AddCategoryRequestType {
   slug: string;
 }
 
+/**
+ * 添加分类
+ * @param data
+ * @returns
+ */
 export const addCategory = async (data: AddCategoryRequestType) =>
   await instance.post<AddCategoryRequestType, null, 'obj'>('/api/blog/category/addCategory', data);
 
@@ -38,8 +43,25 @@ export type EditCategoryRequestType = AddCategoryRequestType & {
   id: number;
 };
 
+/**
+ * 编辑分类
+ * @param data
+ * @returns
+ */
 export const editCategory = async (data: EditCategoryRequestType) =>
   await instance.put<EditCategoryRequestType, null, 'obj'>(
     '/api/blog/category/updateCategory',
     data
   );
+
+export type DelCategroyRequestType = {
+  /** id */
+  id: number;
+};
+
+export const delCategory = async (id: number) =>
+  await instance.delete<DelCategroyRequestType, null, 'obj'>('/api/blog/category/delCategory', {
+    params: {
+      id,
+    },
+  });

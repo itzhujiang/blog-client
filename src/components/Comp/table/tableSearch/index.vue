@@ -4,8 +4,8 @@
       <ARow :gutter="24">
         <ACol v-for="item in searchConfig" :key="item.dataIndex" :span="item.span || 4">
           <!-- 输入框 -->
-          <template  v-if="item.type === 'input'">
-            <AFormItem :label="item.label" >
+          <template v-if="item.type === 'input'">
+            <AFormItem :label="item.label">
               <AInput
                 v-model:value="search[item.dataIndex as string]"
                 v-bind="item.propsFn ? handleItemprops(item as any, search) : item.props"
@@ -13,11 +13,11 @@
                 :disabled="item.disabled"
                 :allowClear="item.allowClear"
               ></AInput>
-           </AFormItem>
+            </AFormItem>
           </template>
           <!-- 下拉选项 -->
           <template v-if="item.type === 'select'">
-            <AFormItem :label="item.label" >
+            <AFormItem :label="item.label">
               <ASelect
                 v-model:value="search[item.dataIndex as string]"
                 v-bind="item.propsFn ? handleItemprops(item, search) : item.props"
@@ -31,9 +31,10 @@
                   :key="it.value"
                   :disabled="it.disabled"
                   :value="it.value"
-                >{{ it.label }}</ASelectOption>
+                  >{{ it.label }}</ASelectOption
+                >
               </ASelect>
-           </AFormItem>
+            </AFormItem>
           </template>
           <!-- 级联 -->
           <template v-if="item.type === 'cascader'">
@@ -61,7 +62,7 @@
                 :disabledDate="item.disabledDate"
                 valueFormat="x"
                 :allowClear="item.allowClear"
-                style="width: 100%;"
+                style="width: 100%"
               ></ADatePicker>
             </AFormItem>
           </template>
@@ -79,24 +80,24 @@
                 :hourStep="item.hourStep"
                 :minuteStep="item.minuteStep"
                 :allowClear="item.allowClear"
-                style="width: 100%;"
+                style="width: 100%"
                 :valueFormat="item.format || 'HH:mm:ss'"
               ></ATimePicker>
             </AFormItem>
           </template>
           <template v-if="item.type === 'dateTimePicker'">
-            <ADatePicker 
-             v-model:value="search[item.dataIndex as string]"
-             v-bind="item.propsFn ? handleItemprops(item, search) : item.props"
-             show-time
-             :placeholder="item.placeholder"
-             :disabled="item.disabled"
-             :disabledDate="item.disabledDate"
-             :disabledTime="item.disabledTime"
+            <ADatePicker
+              v-model:value="search[item.dataIndex as string]"
+              v-bind="item.propsFn ? handleItemprops(item, search) : item.props"
+              show-time
+              :placeholder="item.placeholder"
+              :disabled="item.disabled"
+              :disabledDate="item.disabledDate"
+              :disabledTime="item.disabledTime"
               valueFormat="x"
               :showToday="item.showToday"
               :allowClear="item.allowClear"
-              style="width: 100%;"
+              style="width: 100%"
             />
           </template>
           <!-- 日期范围选择框 -->
@@ -105,50 +106,66 @@
               <DateTimeRangePickerComp
                 :config="{
                   ...item,
-                  valueObj: search
+                  valueObj: search,
                 }"
                 :modelValue="{
-                  start: search[handleVerticalLine(item.dataIndex)[0]!] as string | number | undefined,
-                  end: search[handleVerticalLine(item.dataIndex)[1]!] as string | number | undefined
+                  start: search[handleVerticalLine(item.dataIndex)[0]!] as
+                    | string
+                    | number
+                    | undefined,
+                  end: search[handleVerticalLine(item.dataIndex)[1]!] as
+                    | string
+                    | number
+                    | undefined,
                 }"
-                @update:modelValue="(value) => onSearchUpdate(item, value)"
+                @update:modelValue="value => onSearchUpdate(item, value)"
               ></DateTimeRangePickerComp>
             </AFormItem>
           </template>
           <!-- 时间范围选择框 -->
-           <template v-if="item.type === 'timeRangePicker'">
+          <template v-if="item.type === 'timeRangePicker'">
             <AFormItem :label="item.label">
-              <TimeRangePicker 
-              :config="{
+              <TimeRangePicker
+                :config="{
                   ...item,
-                  valueObj: search
+                  valueObj: search,
                 }"
-              :modelValue="{
-                  start: search[handleVerticalLine(item.dataIndex)[0]!] as string | number | undefined,
-                  end: search[handleVerticalLine(item.dataIndex)[1]!] as string | number | undefined
+                :modelValue="{
+                  start: search[handleVerticalLine(item.dataIndex)[0]!] as
+                    | string
+                    | number
+                    | undefined,
+                  end: search[handleVerticalLine(item.dataIndex)[1]!] as
+                    | string
+                    | number
+                    | undefined,
                 }"
-                @update:modelValue="(value) => onSearchUpdate(item, value)"
-            />
+                @update:modelValue="value => onSearchUpdate(item, value)"
+              />
             </AFormItem>
-           </template>
-           <!-- 自定义 -->
-            <template v-if="item.type === 'customComponent'">
-              <AFormItem :label="item.label">
-                <component :is="item.component" v-bind="item" v-model="search[item.dataIndex as string]"></component>
-              </AFormItem>
-            </template>
+          </template>
+          <!-- 自定义 -->
+          <template v-if="item.type === 'customComponent'">
+            <AFormItem :label="item.label">
+              <component
+                :is="item.component"
+                v-bind="item"
+                v-model="search[item.dataIndex as string]"
+              ></component>
+            </AFormItem>
+          </template>
         </ACol>
         <ACol span="4">
           <!-- 按钮区域 -->
-            <AButton type="primary" style="margin-right: 10px;" @click="onSearchClick">搜索</AButton>
-            <AButton @click="onResetClick">重置</AButton>
+          <AButton type="primary" style="margin-right: 10px" @click="onSearchClick">搜索</AButton>
+          <AButton @click="onResetClick">重置</AButton>
         </ACol>
       </ARow>
     </AForm>
   </div>
 </template>
 
-<script setup lang="ts" >
+<script setup lang="ts">
 import { reactive } from 'vue';
 
 import DateTimeRangePickerComp from '../../dateTimeRangePicker/index.vue';
@@ -160,15 +177,14 @@ defineOptions({
   name: 'TableSearchComp',
 });
 
-
 type SearchReactiveType = Record<string, string | number | undefined>;
 
 const props = defineProps<{
-  searchConfig: TableSearch<Record<string, unknown>>[]
+  searchConfig: TableSearch<Record<string, unknown>>[];
 }>();
 
 const emits = defineEmits<{
-  (_e: 'search', _value: SearchReactiveType): void
+  (_e: 'search', _value: SearchReactiveType): void;
 }>();
 
 defineExpose({
@@ -183,12 +199,11 @@ defineExpose({
    */
   reset: () => {
     onResetClick();
-  }
+  },
 });
 
-
 const search = reactive<SearchReactiveType>({});
-const backupSearch:SearchReactiveType = {};
+const backupSearch: SearchReactiveType = {};
 
 /**
  * 处理props中的dataIndex和value，赋值给search对象
@@ -208,12 +223,11 @@ const handleprops = () => {
       }
     } else {
       const dataIndex = item.dataIndex as string;
-      search[dataIndex] = (item.value as string | number | undefined) || '';
-      backupSearch[dataIndex] = (item.value as string | number | undefined) || '';
+      search[dataIndex] = item.value as string | number | undefined;
+      backupSearch[dataIndex] = item.value as string | number | undefined;
     }
   });
 };
-
 
 handleprops();
 
@@ -221,7 +235,10 @@ handleprops();
  * 修改search的值
  * @param item
  */
-const onSearchUpdate = (item: TableSearch<Record<string, unknown>>, value: { start: string | number | undefined; end: string | number | undefined }) => {
+const onSearchUpdate = (
+  item: TableSearch<Record<string, unknown>>,
+  value: { start: string | number | undefined; end: string | number | undefined }
+) => {
   const dataIndexArr = handleVerticalLine(item.dataIndex as string);
   search[dataIndexArr[0]!] = value.start;
   search[dataIndexArr[1]!] = value.end;
@@ -240,9 +257,6 @@ const onResetClick = () => {
   Object.assign(search, backupSearch);
   onSearchClick();
 };
-
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

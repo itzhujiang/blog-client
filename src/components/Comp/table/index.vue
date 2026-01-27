@@ -1,5 +1,5 @@
 <template>
-  <div class='table-container'>
+  <div class="table-container">
     <div v-if="config.search?.length">
       <TableSearchComp
         ref="tableSearchCompRef"
@@ -8,11 +8,12 @@
       ></TableSearchComp>
     </div>
     <div v-if="config.button?.length">
-      <TableButtonComp 
-       :button-config="{
-        button: config.button,
-        tableMethod
-       }">
+      <TableButtonComp
+        :button-config="{
+          button: config.button,
+          tableMethod,
+        }"
+      >
       </TableButtonComp>
     </div>
     <ATable
@@ -25,61 +26,75 @@
       :rowKey="config.rowKey || 'id'"
       :rowSelection="mergedRowSelection"
     >
-     <template #bodyCell="{ column, text, record }" >
-       <template v-if="column.xtype === 'render'">
-         <div  v-html="column.render(text, record, column)"></div>
-       </template>
-       <template v-if="column.xtype === 'text'">
-         <ATooltip v-if="column.line">
-          <template #title>
-            <div>{{ text }}</div>
-          </template>
-          <div 
-            class="ellipsis"
-            :style="{
-              width: column.width ? column.width + 'px' : 'auto',
-            }">
-            {{ text }}
-          </div>
-         </ATooltip>
-       </template>
-       <template v-if="column.xtype === 'date'">
-        {{ dayjs(Number(text)).format('YYYY-MM-DD') }}
-       </template>
-       <template v-if="column.xtype === 'dateTime'">
-        {{ dayjs(Number(text)).format('YYYY-MM-DD HH:mm:ss') }}
-       </template>
-       <template v-if="column.xtype === 'operate'">
-        <template v-for="item in config.operate" :key="item.label" >
-          <AButton 
-          v-if="item.isShow ? item.isShow(record,tableDataRef!) : true"
-          :type="item.type || 'link'" 
-          :danger="item.danger" 
-          :ghost="item.ghost" 
-          :href="item.href" 
-          @click="() => item.onClick(record, tableDataRef!, popUpFormBoxCompRef!, tableMethod as TableMethodType)"
-        >
-          {{ item.labelFn ? item.labelFn(record, tableDataRef!) : item.label }}
-        </AButton>
+      <template #bodyCell="{ column, text, record }">
+        <template v-if="column.xtype === 'render'">
+          <div
+            @click="column.onClick?.(text, record, column)"
+            v-html="column.render(text, record, column)"
+          ></div>
         </template>
-       </template>
-     </template>
+        <template v-if="column.xtype === 'text'">
+          <ATooltip v-if="column.line">
+            <template #title>
+              <div>{{ text }}</div>
+            </template>
+            <div
+              class="ellipsis"
+              :style="{
+                width: column.width ? column.width + 'px' : 'auto',
+              }"
+            >
+              {{ text }}
+            </div>
+          </ATooltip>
+        </template>
+        <template v-if="column.xtype === 'date'">
+          {{ dayjs(Number(text)).format('YYYY-MM-DD') }}
+        </template>
+        <template v-if="column.xtype === 'dateTime'">
+          {{ dayjs(Number(text)).format('YYYY-MM-DD HH:mm:ss') }}
+        </template>
+        <template v-if="column.xtype === 'operate'">
+          <template v-for="item in config.operate" :key="item.label">
+            <AButton
+              v-if="item.isShow ? item.isShow(record, tableDataRef!) : true"
+              :type="item.type || 'link'"
+              :danger="item.danger"
+              :ghost="item.ghost"
+              :href="item.href"
+              @click="
+                () =>
+                  item.onClick(
+                    record,
+                    tableDataRef!,
+                    popUpFormBoxCompRef!,
+                    tableMethod as TableMethodType
+                  )
+              "
+            >
+              {{ item.labelFn ? item.labelFn(record, tableDataRef!) : item.label }}
+            </AButton>
+          </template>
+        </template>
+      </template>
     </ATable>
     <APagination
-     v-if="config.pagination?.isShow"
-    style="margin-top: 20px;"
-    :current="paginationRef.page"
-    :pageSize="paginationRef.size"
-    :pageSizeOptions="config.pagination.pageSizeOptions || ['10','20','50','100']"
-    show-quick-jumper
-    :total="paginationRef.total"
-    :hideOnSinglePage="true"
-    @change="onPaginationChange" />
+      v-if="config.pagination?.isShow"
+      style="margin-top: 20px"
+      :current="paginationRef.page"
+      :pageSize="paginationRef.size"
+      :pageSizeOptions="config.pagination.pageSizeOptions || ['10', '20', '50', '100']"
+      show-size-changer
+      show-quick-jumper
+      :total="paginationRef.total"
+      @change="onPaginationChange"
+    />
   </div>
   <PopUpFormBoxComp ref="popUpFormBoxCompRef"></PopUpFormBoxComp>
 </template>
 
-<script setup lang="ts"  generic="T = Record<string, unknown>">
+<script setup lang="ts" generic="T = Record<string, unknown>">
+import { message } from 'ant-design-vue';
 import dayjs from 'dayjs';
 import { computed, onMounted, ref } from 'vue';
 
@@ -89,13 +104,12 @@ import type { TableConfig, InternalTableType, TableMethodType } from '../utils/t
 import TableButtonComp from './tableButton/index.vue';
 import TableSearchComp from './tableSearch/index.vue';
 
-
 defineOptions({
   name: 'TabelComp',
 });
 
 const props = defineProps<{
-  config: TableConfig<T>
+  config: TableConfig<T>;
 }>();
 const tableSearchCompRef = ref<InstanceType<typeof TableSearchComp>>(); // 搜索组件实例
 const popUpFormBoxCompRef = ref<InstanceType<typeof PopUpFormBoxComp>>(); // 弹窗组件实例
@@ -150,7 +164,6 @@ const mergedColumns = computed<InternalTableType<T>[]>(() => {
   return columns;
 });
 
-
 onMounted(async () => {
   const res = tableSearchCompRef.value?.getSearch();
   await handleRequest(res || {});
@@ -161,6 +174,7 @@ onMounted(async () => {
  * @param search 搜索参数对象
  */
 const onSearchClick = (search: Record<string, string | number | undefined>) => {
+  paginationRef.value.page = 1;
   handleRequest({ ...search, page: 1, size: paginationRef.value.size });
 };
 
@@ -176,7 +190,11 @@ const onPaginationChange = async (page: number, pageSize: number) => {
   } else {
     paginationRef.value.page = page;
   }
-  await handleRequest({ ...tableSearchCompRef.value?.getSearch(), page: paginationRef.value.page, size: paginationRef.value.size });
+  await handleRequest({
+    ...tableSearchCompRef.value?.getSearch(),
+    page: paginationRef.value.page,
+    size: paginationRef.value.size,
+  });
 };
 
 /**
@@ -184,8 +202,8 @@ const onPaginationChange = async (page: number, pageSize: number) => {
  */
 const handleRequest = async (params: Record<string, unknown>) => {
   loadingRef.value = true;
-  let parameter:Record<string, unknown> | false = params;
-  if ( props.config.beforeRequest) {
+  let parameter: Record<string, unknown> | false = params;
+  if (props.config.beforeRequest) {
     parameter = await props.config.beforeRequest({
       page: 1,
       size: 10,
@@ -194,21 +212,23 @@ const handleRequest = async (params: Record<string, unknown>) => {
   }
   if (parameter === false) {
     loadingRef.value = false;
-    return
+    return;
   }
   const res = await props.config.api({
     page: 1,
     size: 10,
-    ...parameter
+    ...parameter,
   });
+  if (res.code !== 200) {
+    message.error(res.msg);
+  }
   if (res.data && Array.isArray(res.data.data)) {
     tableDataRef.value = res.data.data;
     paginationRef.value.total = res.data.pagination.total;
   }
-  props.config.afterResponse && props.config.afterResponse(res);
+  props.config.afterResponse?.(res);
   loadingRef.value = false;
 };
-
 
 const tableMethod: TableMethodType<T> = {
   goPage: (page: number) => {
@@ -217,14 +237,17 @@ const tableMethod: TableMethodType<T> = {
   setSize: (size: number) => {
     onPaginationChange(1, size);
   },
-  getSelectedRows:  () => {
+  getSelectedRows: () => {
     return selectedRowsRef.value;
   },
-  setSelected: (fn) => {
+  setSelected: fn => {
     selectedRowKeysRef.value = fn(selectedRowKeysRef.value, tableDataRef.value!);
     const rowKey = props.config.rowKey || 'id';
     selectedRowsRef.value = tableDataRef.value!.filter(item => {
-      const key = typeof rowKey === 'function' ?  (item as Record<string, unknown>)[rowKey(item)] : (item as Record<string, unknown>)[rowKey];
+      const key =
+        typeof rowKey === 'function'
+          ? (item as Record<string, unknown>)[rowKey(item)]
+          : (item as Record<string, unknown>)[rowKey];
       return selectedRowKeysRef.value.includes(key as string | number);
     });
   },
@@ -237,27 +260,25 @@ const tableMethod: TableMethodType<T> = {
   },
   refresh: () => {
     tableSearchCompRef.value?.reset();
-  }
+  },
 };
-
 </script>
 
 <style scoped lang="less">
 .table-container {
   padding: 16px;
-  
+
   // Less 嵌套语法示例
   .table-header {
     margin-bottom: 16px;
   }
-  .ellipsis{
+  .ellipsis {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .a-table{
+  .a-table {
     margin-top: 10px;
   }
-
 }
 </style>

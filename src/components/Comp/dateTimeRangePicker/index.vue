@@ -1,22 +1,20 @@
 <!-- 日期范围选择框 -->
 <template>
-    <ARangePicker
-       v-model:value="dateTimeRange"
-       v-bind="config.propsFn ? handleItemprops(config, config.valueObj) : config.props || {}"
-       :disabledDate="config.disabledDate"
-       :placeholder="placeholder"
-       :disabled="config.disabled"
-       :showTime="config.showTime"
-       :allowClear="config.allowClear"
-       valueFormat="x"
-       style="width: 100%;"
-    />
-    
+  <ARangePicker
+    v-model:value="dateTimeRange"
+    v-bind="config.propsFn ? handleItemprops(config, config.valueObj) : config.props || {}"
+    :disabledDate="config.disabledDate"
+    :placeholder="placeholder"
+    :disabled="config.disabled"
+    :showTime="config.showTime"
+    :allowClear="config.allowClear"
+    valueFormat="x"
+    style="width: 100%"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-
 
 import type { DateTimerangePickerTableSearch } from '../utils/searchTypes';
 import { handleItemprops, handleVerticalLine } from '../utils/utils';
@@ -30,15 +28,18 @@ const props = defineProps<{
     valueObj: Record<string, unknown>;
   } & {
     rules?: Record<string, unknown>[];
-  },
+  };
   modelValue: {
     start: string | number | undefined;
     end: string | number | undefined;
-  }
+  };
 }>();
 
 const emits = defineEmits<{
-  (_e: 'update:modelValue', _value: { start: string | number | undefined; end: string | number | undefined }): void;
+  (
+    _e: 'update:modelValue',
+    _value: { start: string | number | undefined; end: string | number | undefined }
+  ): void;
 }>();
 
 const dateTimeRange = computed({
@@ -49,26 +50,21 @@ const dateTimeRange = computed({
     if (!value) {
       emits('update:modelValue', {
         start: '',
-        end: ''
+        end: '',
       });
     } else {
       emits('update:modelValue', {
         start: value[0],
-        end: value[1]
+        end: value[1],
       });
     }
-    
-  }
+  },
 });
 
 const placeholder = computed(() => {
   const dataIndexArr = handleVerticalLine(props.config.placeholder);
   return dataIndexArr;
 });
-
-
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

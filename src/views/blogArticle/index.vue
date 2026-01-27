@@ -1,40 +1,49 @@
 <template>
   <div class="blog-article-container">
     <TableComp :config="config"></TableComp>
-    <AModal
-      v-model:open="visRef"
-      title="文章预览"
-      width="80%"
-      :footer="null"
-    >
-      <div
-        v-loading="isLoading"
-        class="markdown-content"
-        v-html="markdownContentRef"
-      ></div>
+    <AModal v-model:open="visRef" title="文章预览" width="80%" :footer="null">
+      <div v-loading="isLoading" class="markdown-content" v-html="markdownContentRef"></div>
     </AModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { TableComp, createTableConfig, UploadComp, createFormConfig, type UploadResponseType } from '@/components/Comp/index';
-import type { ArticleRequestType, ArticleList, AddArticleRequestType, EditArticleRequestType } from '@/api/blog/article'
+import type { Rule } from 'ant-design-vue/es/form';
+import { ref } from 'vue';
+
+import type {
+  ArticleRequestType,
+  ArticleList,
+  AddArticleRequestType,
+  EditArticleRequestType,
+} from '@/api/blog/article';
 import { getArticleList, addArticle, editArticle } from '@/api/blog/article';
 import { upload } from '@/api/blog/upload';
-import type { Rule } from 'ant-design-vue/es/form';
+import {
+  TableComp,
+  createTableConfig,
+  UploadComp,
+  createFormConfig,
+  type UploadResponseType,
+} from '@/components/Comp/index';
+import FileSelectComp from '@/components/FileSelect/index.vue';
 import { FILE_DOMAIN } from '@/utils/constants';
-import { ref } from 'vue';
-import {analysisMd} from '@/utils/utils'
-import FileSelectComp from '@/components/FileSelect/index.vue'
+import { analysisMd } from '@/utils/utils';
 
+defineOptions({
+  name: 'blogArticle',
+});
 
-const visRef = ref<boolean>(false)
-const markdownContentRef = ref<string>('')
-const isLoading = ref<boolean>(false)
+const visRef = ref<boolean>(false);
+const markdownContentRef = ref<string>('');
+const isLoading = ref<boolean>(false);
 
 let previousurl = '';
 
-const PopUpFormConfig = <T extends 'add' | 'edit'>(type: T, data: T extends 'add' ? AddArticleRequestType : EditArticleRequestType) => {
+const PopUpFormConfig = <T extends 'add' | 'edit'>(
+  type: T,
+  data: T extends 'add' ? AddArticleRequestType : EditArticleRequestType
+) => {
   return {
     title: type === 'add' ? '添加文章' : '修改文章',
     width: '40%',
@@ -48,131 +57,143 @@ const PopUpFormConfig = <T extends 'add' | 'edit'>(type: T, data: T extends 'add
         slug: data.slug,
         thumbnailList: data.thumbnailCode,
         articleList: data.articleCode,
-        attachmentList: data.attachmentCode ? data.attachmentCode.map(item => {
-        return {
-          url: item,
-          code: '',
-        }
-        }) : [{
-          url: '',
-          code: ''
-        }],
-        categories: data.categories
+        attachmentList: data.attachmentCode
+          ? data.attachmentCode.map(item => {
+              return {
+                url: item,
+                code: '',
+              };
+            })
+          : [
+              {
+                url: '',
+                code: '',
+              },
+            ],
+        categories: data.categories,
       },
       columns: [
-      {
-        label: '文章标题',
-        type: 'input',
-        dataIndex: 'title',
-        placeholder: '请输入文章标题',
-        rules: [{ required: true, message: '请输入文章标题' }]
-      },
-      {
-        label: 'url标识',
-        type: 'input',
-        dataIndex: 'slug',
-        placeholder: '请输入url标识',
-        rules: [{ required: true, message: '请输入url标识' }]
-      },
-      {
-        label: '缩略图',
-        type: 'component',
-        component: UploadComp,
-        config: {
-          type: ['image/jpeg', 'image/png'],
-          fileSize: 2,
-          apiUrl: handleUpload,
-          multiple: false,
+        {
+          label: '文章标题',
+          type: 'input',
+          dataIndex: 'title',
+          placeholder: '请输入文章标题',
+          rules: [{ required: true, message: '请输入文章标题' }],
         },
-        dataIndex: 'thumbnailList',
-      },
-      {
-        label: '摘要',
-        type: 'textarea',
-        dataIndex: 'excerpt',
-        placeholder: '请输入摘要',
-        rules: [{ required: true, message: '请输入摘要' }]
-      },
-      {
-        label: '文章',
-        type: 'component',
-        component: UploadComp,
-        dataIndex: 'articleList',
-        placeholder: '请选择文章',
-        config: {
-          type: ['md'],
-          fileSize: 10,
-          apiUrl: handleUpload,
-          multiple: false,
-          onPreview: async () => {
-            visRef.value = true
-          }
+        {
+          label: 'url标识',
+          type: 'input',
+          dataIndex: 'slug',
+          placeholder: '请输入url标识',
+          rules: [{ required: true, message: '请输入url标识' }],
         },
-        rules: [{ required: true, validator: async (_rule: Rule, value: {code: string, url: string}[]) => {
-          if (!value.length) {
-            return Promise.reject('请选择文章');
-          } else {
-            return Promise.resolve();
-          }
-        }, trigger: 'blur'}]
+        {
+          label: '缩略图',
+          type: 'component',
+          component: UploadComp,
+          config: {
+            type: ['image/jpeg', 'image/png'],
+            fileSize: 2,
+            apiUrl: handleUpload,
+            multiple: false,
+          },
+          dataIndex: 'thumbnailList',
+        },
+        {
+          label: '摘要',
+          type: 'textarea',
+          dataIndex: 'excerpt',
+          placeholder: '请输入摘要',
+          rules: [{ required: true, message: '请输入摘要' }],
+        },
+        {
+          label: '文章',
+          type: 'component',
+          component: UploadComp,
+          dataIndex: 'articleList',
+          placeholder: '请选择文章',
+          config: {
+            type: ['md'],
+            fileSize: 10,
+            apiUrl: handleUpload,
+            multiple: false,
+            onPreview: async () => {
+              visRef.value = true;
+            },
+          },
+          rules: [
+            {
+              required: true,
+              validator: async (_rule: Rule, value: { code: string; url: string }[]) => {
+                if (!value.length) {
+                  return Promise.reject('请选择文章');
+                } else {
+                  return Promise.resolve();
+                }
+              },
+              trigger: 'blur',
+            },
+          ],
+        },
+        {
+          label: '附件',
+          type: 'component',
+          dataIndex: 'attachmentList',
+          component: FileSelectComp,
+          props: {},
+        },
+        {
+          label: '分类',
+          type: 'input',
+          dataIndex: 'categories',
+        },
+      ],
+      watchEffectFn: async data => {
+        const url =
+          data.articleList && Array.isArray(data.articleList) ? data.articleList[0]?.url : '';
+        if (url !== previousurl) {
+          const analysisContent = await analysisMd(FILE_DOMAIN + url);
+          markdownContentRef.value = analysisContent.mdhtml;
+          data.attachmentList = analysisContent.urls.map(item => {
+            return {
+              source: item,
+              file: '',
+            };
+          });
+          previousurl = url;
+        }
       },
-      {
-        label: '附件',
-        type: 'component',
-        dataIndex: 'attachmentList',
-        component: FileSelectComp,
-        props: {},
-      },
-      {
-        label: '分类',
-        type: 'input',
-        dataIndex: 'categories',
-      }
-     ],
-     watchEffectFn: async (data) => {
-      const url = data.articleList && Array.isArray(data.articleList) ?  data.articleList[0]?.url : ''
-      if (url !== previousurl) {
-        const analysisContent = await analysisMd(FILE_DOMAIN + url);
-        markdownContentRef.value = analysisContent.mdhtml
-        data.attachmentList = analysisContent.urls.map(item => {
-          return {
-            source: item,
-            file: ''
-          }
-        })
-        previousurl = url;
-      }
-     }
     }),
     api: type === 'add' ? addArticle : editArticle,
-  }
-}
-
+  };
+};
 
 const config = createTableConfig<ArticleRequestType, ArticleList>({
   button: [
     {
       label: '添加',
       type: 'primary',
-      onClick: (com) => {
-       com.open(PopUpFormConfig<'add'>('add', {
-        title:'',
-        slug: '',
-        thumbnailCode:  '',
-        articleCode: '',
-        attachmentCode: [],
-        categories: [],
-        excerpt: ''
-       }))
-      }
-    }
+      onClick: com => {
+        com.open(
+          PopUpFormConfig<'add'>('add', {
+            title: '',
+            slug: '',
+            thumbnailCode: '',
+            articleCode: '',
+            attachmentCode: [],
+            categories: [],
+            excerpt: '',
+          })
+        );
+      },
+    },
   ],
   columns: [
     {
       title: 'id',
       dataIndex: 'id',
       xtype: 'text',
-      width: 50
+      width: 50,
     },
     {
       title: '文章标题',
@@ -182,64 +203,61 @@ const config = createTableConfig<ArticleRequestType, ArticleList>({
     {
       title: 'url标识',
       dataIndex: 'slug',
-      xtype: 'text'
+      xtype: 'text',
     },
     {
       title: '文章摘要',
       dataIndex: 'excerpt',
       xtype: 'text',
-      line: true
+      line: true,
     },
     {
       title: '文章内容',
       dataIndex: 'fileUrl',
-      xtype: 'text'
+      xtype: 'text',
     },
     {
       title: '附件',
       dataIndex: 'attachmentUrlArr',
-      xtype: 'text'
+      xtype: 'text',
     },
     {
       title: '作者名称',
       dataIndex: 'authorName',
-      xtype: 'text'
+      xtype: 'text',
     },
     {
       title: '阅读时间',
       dataIndex: 'readingTime',
-      xtype: 'text'
+      xtype: 'text',
     },
     {
       title: '阅读量',
       dataIndex: 'viewCount',
-      xtype: 'text'
+      xtype: 'text',
     },
     {
       title: '发布时间',
       dataIndex: 'publishedAt',
-      xtype: 'dateTime'
-    }
+      xtype: 'dateTime',
+    },
   ],
   api: getArticleList,
-})
+});
 
-const handleUpload = async (file: File):Promise<UploadResponseType >  => {
+const handleUpload = async (file: File): Promise<UploadResponseType> => {
   const res = await upload(file);
-  
-   return {
+
+  return {
     code: res.code,
     data: {
       code: res.data!.data.code,
       size: res.data!.data.size,
-      url: res.data!.data.url
+      url: res.data!.data.url,
     },
-    msg: res.msg
-
-   }
-
-}
-
+    msg: res.msg,
+  };
+};
 </script>
 
 <style lang="less" scoped>

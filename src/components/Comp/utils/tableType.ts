@@ -73,6 +73,7 @@ export interface RenderTableType<T> extends BaseTableType<T> {
   xtype: 'render';
   /** 自定义渲染函数 */
   render: (_value: unknown, _row: T, _data: T[]) => string | unknown;
+  onClick?: (_value: unknown, _row: T, _data: T[]) => void;
 }
 
 /** 操作列 */

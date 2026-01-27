@@ -55,6 +55,17 @@ export const routes: RouteRecordRaw[] = [
               id: '0102',
             },
           },
+          {
+            name: 'comment',
+            path: '/blog/comment',
+            component: () => import('@/views/blogComment/index.vue'),
+            meta: {
+              title: '博客评论',
+              icon: 'comment',
+              showInMenu: true,
+              id: '0103',
+            },
+          },
         ],
       },
     ],

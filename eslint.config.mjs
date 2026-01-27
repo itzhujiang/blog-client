@@ -105,80 +105,11 @@ export default defineConfig([
       // 优先使用箭头函数作为回调函数
       'prefer-arrow-callback': 'error',
 
-      // 箭头函数前后必须有空格
-      'arrow-spacing': ['error', { before: true, after: true }],
-
-      // === 空格和格式化规则 ===
-
-      // 强制使用 2 个空格缩进
-      indent: ['error', 2, { SwitchCase: 1 }],
-
-      // 关键字前后必须有空格 (if, else, for 等)
-      'keyword-spacing': ['error', { before: true, after: true }],
-
-      // 代码块前必须有空格
-      'space-before-blocks': ['error', 'always'],
-
-      // 操作符前后必须有空格
-      'space-infix-ops': 'error',
-
-      // 函数括号前的空格规则
-      'space-before-function-paren': [
-        'error',
-        {
-          anonymous: 'always', // 匿名函数前有空格: function () {}
-          named: 'never', // 命名函数前无空格: function name() {}
-          asyncArrow: 'always', // 异步箭头函数前有空格: async () => {}
-        },
-      ],
-
-      // 逗号后的空格规则
-      'comma-spacing': ['error', { before: false, after: true }],
-
-      // 对象字面量花括号内的空格: { key: value }
-      'object-curly-spacing': ['error', 'always'],
-
-      // 数组方括号内无空格: [1, 2, 3]
-      'array-bracket-spacing': ['error', 'never'],
-
-      // === 分号规则（强制显式分号） ===
-
-      // 强制使用分号（符合代码规范）
-      semi: ['error', 'always'],
-
-      // 分号前后的空格规则
-      'semi-spacing': ['error', { before: false, after: true }],
-
-      // === 引号规则 ===
-
-      // JavaScript 中使用单引号，避免使用双引号
-      quotes: ['error', 'single', { avoidEscape: true }],
-
-      // 属性名只在必要时使用引号
-      'quote-props': ['error', 'as-needed'],
-
-      // === 行间距和格式化规则 ===
-
-      // 最多连续2个空行，文件末尾最多1个空行
-      'no-multiple-empty-lines': ['error', { max: 2, maxEOF: 1 }],
-
-      // 强制文件末尾有换行符
-      'eol-last': ['error', 'always'],
+      // === 格式化规则由 Prettier 处理，这里不再配置 ===
+      // 注意：indent, quotes, semi 等格式化规则已移除，由 Prettier 统一处理
 
       // === 注释规则 ===
-
-      // 单行注释后必须有空格: // 这是注释
-      'spaced-comment': [
-        'error',
-        'always',
-        {
-          line: { markers: ['/'], exceptions: ['-', '+'] },
-          block: { markers: ['!'], exceptions: ['*'], balanced: true },
-        },
-      ],
-
-      // 多行注释使用 /* */ 块注释格式
-      'multiline-comment-style': ['error', 'starred-block'],
+      // 注释格式由 Prettier 处理
 
       // === 导入/导出规则 ===
 
@@ -277,23 +208,17 @@ export default defineConfig([
       // 多行元素内容前后必须有换行
       'vue/multiline-html-element-content-newline': 'off',
 
-      // 属性每行最多一个
-      'vue/max-attributes-per-line': [
-        'error',
-        {
-          singleline: { max: 3 },
-          multiline: { max: 1 },
-        },
-      ],
+      // 属性格式由 Prettier 处理
+      'vue/max-attributes-per-line': 'off',
 
-      // 属性之间必须有换行
-      'vue/first-attribute-linebreak': [
-        'error',
-        {
-          singleline: 'ignore',
-          multiline: 'below',
-        },
-      ],
+      // 属性换行由 Prettier 处理
+      'vue/first-attribute-linebreak': 'off',
+
+      // HTML 缩进由 Prettier 处理
+      'vue/html-indent': 'off',
+
+      // HTML 结束标签换行由 Prettier 处理
+      'vue/html-closing-bracket-newline': 'off',
     },
   },
 
