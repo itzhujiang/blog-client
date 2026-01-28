@@ -26,7 +26,7 @@ import Layout from '@/components/Layout/index.vue';
 import type { HistoryType } from '@/utils/type';
 
 defineOptions({
-  name: 'home-index',
+  name: 'HomeIndex',
 });
 
 const menuCompRef = ref<InstanceType<typeof MenuComp>>();

@@ -81,3 +81,13 @@ export const arrToMap = (arr: MapType[]) => {
   }, {});
   return result;
 };
+
+/**
+ * md文本转html
+ * @param str
+ * @returns
+ */
+export const mdToHtml = async (str: string) => {
+  const mdhtml = await marked(str);
+  return mdhtml;
+};

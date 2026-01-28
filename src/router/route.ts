@@ -66,6 +66,17 @@ export const routes: RouteRecordRaw[] = [
               id: '0103',
             },
           },
+          {
+            name: 'about',
+            path: '/blog/about',
+            component: () => import('@/views/blogAbout/index.vue'),
+            meta: {
+              title: '关于我',
+              icon: 'comment',
+              showInMenu: true,
+              id: '0104',
+            },
+          },
         ],
       },
     ],

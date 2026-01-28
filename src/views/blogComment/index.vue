@@ -1,11 +1,7 @@
 <template>
   <div class="blog-comment-container">
     <TableComp :config="config" />
-    <AModal v-model:open="dialogVisibleRef" :title="dialogConfigRef.title">
-      <strong>
-        {{ dialogConfigRef.content }}
-      </strong>
-    </AModal>
+    <PreviewDialogComp ref="previewDialogCompRef"></PreviewDialogComp>
     <AImage
       :width="200"
       :style="{ display: 'none' }"
@@ -19,15 +15,17 @@
 </template>
 
 <script setup lang="ts">
+import { message, Modal } from 'ant-design-vue';
 import { ref } from 'vue';
 
 import {
+  delComment,
   getCommentsList,
   reviewComment,
   type CommentList,
   type CommentListRequestType,
 } from '@/api/blog/comment';
-import { TableComp, createTableConfig } from '@/components/Comp/index';
+import { TableComp, createTableConfig, PreviewDialogComp } from '@/components/Comp/index';
 import { COMMENT_STATUS_MAP, COMMENT_STATUS_OPTION } from '@/utils/constants';
 
 defineOptions({
@@ -117,9 +115,10 @@ const config = createTableConfig<CommentListRequestType, CommentList>({
         return `<a>查看</a>`;
       },
       onClick: (data, row) => {
-        dialogConfigRef.value.title = `${row.authorName}评论`;
-        dialogConfigRef.value.content = data as string;
-        dialogVisibleRef.value = true;
+        previewDialogCompRef.value?.open({
+          title: `${row.authorName}评论`,
+          content: data as string,
+        });
       },
     },
     {
@@ -168,23 +167,37 @@ const config = createTableConfig<CommentListRequestType, CommentList>({
         });
       },
     },
+    {
+      label: '删除',
+      danger: true,
+      onClick: row => {
+        Modal.confirm({
+          title: '删除',
+          content: `确认删除 ${row.id} 吗？`,
+          onOk: async () => {
+            try {
+              const res = await delComment({ id: row.id });
+              if (res.code === 200) {
+                message.success('删除成功');
+              } else if (res.code === 500) {
+                message.error(res.msg);
+              }
+            } catch (error) {
+              console.error(error);
+            }
+          },
+        });
+      },
+    },
   ],
   api: getCommentsList,
   pagination: {
     isShow: true,
   },
 });
-
-const dialogVisibleRef = ref<boolean>(false);
+const previewDialogCompRef = ref<InstanceType<typeof PreviewDialogComp>>();
 const visibleImageRef = ref<boolean>(false);
 const imgUrlRef = ref<string>();
-const dialogConfigRef = ref<{
-  title: string;
-  content: string;
-}>({
-  title: '',
-  content: '',
-});
 
 /**
  * 设置图片预览隐藏

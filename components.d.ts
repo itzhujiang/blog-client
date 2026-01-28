@@ -46,6 +46,7 @@ declare module 'vue' {
     Menu: typeof import('./src/components/Menu/index.vue')['default']
     PopUpFormBox: typeof import('./src/components/Comp/popUpFormBox/index.vue')['default']
     Preview: typeof import('./src/components/Comp/upload/components/Preview.vue')['default']
+    PreviewDialog: typeof import('./src/components/Comp/PreviewDialog/index.vue')['default']
     PullToLoadSelect: typeof import('./src/components/Comp/pullToLoadSelect/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

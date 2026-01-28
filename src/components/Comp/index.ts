@@ -1,5 +1,6 @@
 import FormComp from './form/index.vue';
 import PopUpFormBoxComp from './popUpFormBox/index.vue';
+import PreviewDialogComp from './previewDialog/index.vue';
 import TableComp from './table/index.vue';
 import SearchComp from './table/tableSearch/index.vue';
 import UploadComp from './upload/index.vue';
@@ -26,6 +27,7 @@ export {
   SearchComp,
   createPopUpFormConfig,
   switchType,
+  PreviewDialogComp,
 };
 
 export type {

@@ -503,7 +503,7 @@
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|:----:|------|
 | id | number | 是 | 评论ID |
-| status | string | 是 | 状态：approved/spam/trash |
+| status | string | 是 | 状态：pending/approved/spam/trash |
 
 **成功响应：**
 ```json
@@ -523,6 +523,39 @@
 }
 ```
 
+---
+
+### 4.3 删除评论
+
+| 属性 | 值 |
+|------|----|
+| **URL** | `/api/blog/comment/delComment` |
+| **Method** | `delete` |
+| **Content-Type** | `application/json` |
+
+**请求参数：**
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|:----:|------|
+| id | number | 是 | 评论ID |
+
+**成功响应：**
+```json
+{
+  "code": 200,
+  "msg": "评论删除成功",
+  "data": null
+}
+```
+
+**错误响应：**
+```json
+{
+  "code": 500,
+  "msg": "评论不存在",
+  "data": null
+}
+```
 ---
 
 ## 五、媒体文件上传

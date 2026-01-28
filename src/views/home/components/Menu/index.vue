@@ -13,7 +13,7 @@ import type { HistoryType } from '@/utils/type';
 const menuCompRef = ref<InstanceType<typeof MenuComp>>();
 
 defineOptions({
-  name: 'comp-menu',
+  name: 'CompMenu',
 });
 
 defineExpose<{

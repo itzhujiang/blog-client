@@ -62,8 +62,28 @@ type ReviewCommentRequestType = {
   status: 'approved' | 'spam';
 };
 
+/**
+ * 审核
+ * @param data
+ * @returns
+ */
 export const reviewComment = async (data: ReviewCommentRequestType) =>
   await instance.put<ReviewCommentRequestType, null, 'obj'>(
     '/api/blog/comment/reviewComment',
     data
   );
+
+export type DelCommentRequestType = {
+  /** id */
+  id: number;
+};
+
+/**
+ * 删除评论
+ * @param params
+ * @returns
+ */
+export const delComment = async (params: DelCommentRequestType) =>
+  await instance.delete<DelCommentRequestType, null, 'obj'>('/api/blog/comment/delComment', {
+    params,
+  });

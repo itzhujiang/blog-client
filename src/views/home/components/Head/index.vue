@@ -12,7 +12,7 @@ import HeadOverviewComp from './HeadOverview.vue';
 import type { HistoryType } from '@/utils/type';
 
 defineOptions({
-  name: 'comp-head',
+  name: 'CompHead',
 });
 
 defineProps<{

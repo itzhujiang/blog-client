@@ -16,7 +16,7 @@ import { FormComp, createFormConfig } from '@/components/Comp/index';
 import { useUserStore } from '@/store/useUserStore';
 
 defineOptions({
-  name: 'login-index',
+  name: 'LoginIndex',
 });
 
 const { login } = useUserStore();
