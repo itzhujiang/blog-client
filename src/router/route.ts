@@ -72,7 +72,7 @@ export const routes: RouteRecordRaw[] = [
             component: () => import('@/views/blogAbout/index.vue'),
             meta: {
               title: '关于我',
-              icon: 'comment',
+              icon: 'about',
               showInMenu: true,
               id: '0104',
             },

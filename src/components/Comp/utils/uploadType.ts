@@ -46,5 +46,5 @@ export type UploadResponseType = {
 export type ModelValueType = {
   url: string;
   code: string;
-  file: File;
+  file?: File;
 };

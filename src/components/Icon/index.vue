@@ -18,6 +18,7 @@ const iconMap = {
   del: 'icon-shanchu',
   jiantou_xiangyou: 'icon-jiantou_xiangyou',
   comment: 'icon-pinglun',
+  about: 'icon-guanyuwomen',
 };
 
 const props = defineProps<{
@@ -28,7 +29,7 @@ const icon = computed(() => (props.type ? iconMap[props.type] : ''));
 </script>
 
 <style lang="less" scoped>
-@import '//at.alicdn.com/t/c/font_5116467_eaiozec323u.css';
+@import '//at.alicdn.com/t/c/font_5116467_8nlz7vgtsnu.css';
 .iconfont {
   color: inherit;
   font-size: inherit;
