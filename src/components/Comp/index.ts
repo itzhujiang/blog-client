@@ -1,3 +1,4 @@
+import DynamicsFormComp from './dynamicsForm/index.vue';
 import FormComp from './form/index.vue';
 import PopUpFormBoxComp from './popUpFormBox/index.vue';
 import PreviewDialogComp from './previewDialog/index.vue';
@@ -15,6 +16,7 @@ import {
   createFormConfig,
   createPopUpFormConfig,
   switchType,
+  createDynamicsFormConfig,
 } from './utils/utils';
 
 export {
@@ -28,6 +30,8 @@ export {
   createPopUpFormConfig,
   switchType,
   PreviewDialogComp,
+  DynamicsFormComp,
+  createDynamicsFormConfig,
 };
 
 export type {

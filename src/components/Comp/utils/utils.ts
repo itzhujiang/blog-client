@@ -1,4 +1,5 @@
 // 本文件用于创建工具函数
+import type { DynamicsFormType } from './dynamicsFormType';
 import type { FormTypeConfig } from './formType';
 import type { PupUpFormBoxConfig, msgType } from './popUpFormBoxType';
 import type { TableSearch } from './searchTypes';
@@ -19,9 +20,18 @@ export function createFormConfig(config: FormTypeConfig): FormTypeConfig {
   return config;
 }
 
+/**
+ * 创建弹窗配置工具函数
+ * @param config
+ * @returns
+ */
 export function createPopUpFormConfig<T, C>(
   config: PupUpFormBoxConfig<T, C>
 ): PupUpFormBoxConfig<T, C> {
+  return config;
+}
+
+export function createDynamicsFormConfig(config: DynamicsFormType): DynamicsFormType {
   return config;
 }
 

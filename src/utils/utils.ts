@@ -83,6 +83,18 @@ export const arrToMap = (arr: MapType[]) => {
 };
 
 /**
+ * 映射转数组
+ */
+export const mapToArr = (
+  obj: Record<string, unknown>
+): Array<{ label: string; value: unknown }> => {
+  return Object.entries(obj).map(([key, value]) => ({
+    label: key,
+    value: value,
+  }));
+};
+
+/**
  * md文本转html
  * @param str
  * @returns
