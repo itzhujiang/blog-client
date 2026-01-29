@@ -1,4 +1,6 @@
 // 弹窗form的类型
+import type { ComponentPublicInstance } from 'vue';
+
 import type { FormTypeConfig } from './formType';
 import type { ResponseType } from './tableType';
 
@@ -12,8 +14,14 @@ export type PupUpFormBoxConfig<TParams = Record<string, unknown>, TResponse = un
   width?: string;
   api: ApiFunction<TParams, TResponse>;
   beforeRequest?:
-    | ((_data: TParams) => Promise<TParams | false>)
-    | ((_data: TParams) => TParams | false);
+    | ((
+        _data: TParams & Record<string, unknown>,
+        _getComponentRef: () => Record<string, ComponentPublicInstance>
+      ) => Promise<TParams | false>)
+    | ((
+        _data: TParams & Record<string, unknown>,
+        _getComponentRef: () => Record<string, ComponentPublicInstance>
+      ) => TParams | false);
   afterResponse?: (
     _data: ResponseType<TResponse, 'obj'>
   ) => Promise<AfterResponseReturnType> | AfterResponseReturnType;

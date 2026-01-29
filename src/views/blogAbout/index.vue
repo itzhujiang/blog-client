@@ -15,9 +15,11 @@ import {
   UploadComp,
   createDynamicsFormConfig,
   type UploadResponseType,
+  type UploadModelValueType,
+  switchType,
 } from '@/components/Comp/index';
 import { TableComp, createTableConfig, PreviewDialogComp } from '@/components/Comp/index';
-import { analysisMd, mapToArr } from '@/utils/utils';
+import { analysisMd, arrToMap, mapToArr, type MapType } from '@/utils/utils';
 
 defineOptions({
   name: 'blogAbout',
@@ -123,7 +125,7 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
   operate: [
     {
       label: '修改',
-      onClick: (row, _data, comp) => {
+      onClick: (row, _data, comp, tableMethod) => {
         console.log(row);
         comp.open({
           title: '修改',
@@ -133,9 +135,9 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
           },
           data: {
             id: row.id,
-            contactInfo: mapToArr(row.contactInfo),
+            contactInfoArr: mapToArr(row.contactInfo),
             jobTitle: row.jobTitle,
-            avatarCode: row.avatarUrl
+            avatar: row.avatarUrl
               ? [
                   {
                     code: '',
@@ -143,7 +145,7 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
                   },
                 ]
               : '',
-            contentCode: row.contentUrl
+            content: row.contentUrl
               ? [
                   {
                     code: '',
@@ -151,9 +153,9 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
                   },
                 ]
               : '',
-            personalTags: row.personalTags.join('、'),
-            socialLinks: mapToArr(row.socialLinks),
-            skills: JSON.stringify(row.skills, null, 2),
+            tags: row.personalTags.join('、'),
+            socialLinksArr: mapToArr(row.socialLinks),
+            skill: JSON.stringify(row.skills, null, 2),
             timeline: row.timeline,
             isUpdateAvatar: false,
             isUpdateContent: false,
@@ -168,14 +170,14 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
             {
               label: '个人标签',
               type: 'input',
-              dataIndex: 'personalTags',
+              dataIndex: 'tags',
               rules: [{ required: true, message: '请输入个人标签' }],
             },
             {
               label: '联系方式',
               type: 'component',
               component: DynamicsFormComp,
-              dataIndex: 'contactInfo',
+              dataIndex: 'contactInfoArr',
               config: createDynamicsFormConfig({
                 showAddButton: true,
                 height: 300,
@@ -205,7 +207,7 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
                   },
                 ],
               }),
-              rules: [{ required: true, message: '请输入联系方式' }],
+              // rules: [{ required: true, message: '请输入联系方式' }],
             },
             {
               label: '头像',
@@ -231,7 +233,7 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
                 type: ['md'],
                 onPreview: async (data: { code: string; url: string }) => {
                   console.log(data);
-                  const content = (await analysisMd(data.url)).mdhtml
+                  const content = (await analysisMd(data.url)).mdhtml;
                   previewDialogCompRef.value?.open({
                     title: '内容',
                     content,
@@ -243,7 +245,7 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
               label: '社交媒体',
               type: 'component',
               component: DynamicsFormComp,
-              dataIndex: 'socialLinks',
+              dataIndex: 'socialLinksArr',
               config: createDynamicsFormConfig({
                 showAddButton: true,
                 height: 300,
@@ -275,7 +277,6 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
                   },
                 ],
               }),
-              rules: [{ required: true, message: '请输入社交媒体' }],
             },
             {
               label: '成长足迹',
@@ -320,23 +321,85 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
                   },
                 ],
               }),
-              rules: [{ required: true, message: '请输入成长足迹' }],
+              // rules: [{ required: true, message: '请输入成长足迹' }],
             },
             {
               label: '技能专长',
               type: 'textarea',
-              dataIndex: 'skills',
+              dataIndex: 'skill',
               placeholder: '请输入技能专长',
               rows: 10,
-              rules: [{ required: true, message: '请输入技能专长' }],
+              // rules: [{ required: true, message: '请输入技能专长' }],
             },
           ],
           api: updateAboutInfo,
+          beforeRequest: async (data, getComponetRef) => {
+            try {
+              const timelineCompRef = (getComponetRef().timeline as InstanceType<
+                typeof DynamicsFormComp
+              >)!.getRef();
+              const socialLinksCompRef = (getComponetRef().socialLinksArr as InstanceType<
+                typeof DynamicsFormComp
+              >)!.getRef();
+              const contactInfoCompRef = (getComponetRef().contactInfoArr as InstanceType<
+                typeof DynamicsFormComp
+              >)!.getRef();
+              const validateArr = [timelineCompRef, socialLinksCompRef, contactInfoCompRef].map(
+                item => {
+                  return new Promise(async (resolve, reject) => {
+                    try {
+                      await item?.validate();
+                      resolve(1);
+                    } catch {
+                      reject();
+                    }
+                  });
+                }
+              );
+              await Promise.all(validateArr);
+              const avatar = data.avatar as '' | UploadModelValueType[];
+              if (avatar && avatar[0]?.code) {
+                data.isUpdateAvatar = true;
+                data.avatarCode = avatar[0]?.code;
+              }
+              const content = data.content as '' | UploadModelValueType[];
+              if (content && content[0]?.code) {
+                data.isUpdateContent = true;
+                data.contentCode = content[0]?.code;
+              }
+              const tag = data.tags as string;
+              data.personalTags = tag.split('、');
+              const skills = data.skill as string;
+              data.skills = JSON.parse(skills);
+              const socialLinksArr = data.socialLinksArr as MapType[];
+              data.socialLinks = arrToMap(socialLinksArr, 'label');
+              const contactInfoArr = data.contactInfoArr as MapType[];
+              data.contactInfo = arrToMap(contactInfoArr, 'label');
+              return data;
+            } catch {
+              return false;
+            }
+          },
+          afterResponse: res => {
+            if (res.code === 200) {
+              console.log(tableMethod);
+
+              tableMethod.refresh();
+            }
+            return {
+              isMsg: true,
+              msg: res.msg,
+              type: switchType(res.code),
+            };
+          },
         });
       },
     },
   ],
   api: getAboutInfo,
+  pagination: {
+    isShow: true,
+  },
 });
 
 const previewDialogCompRef = ref<InstanceType<typeof PreviewDialogComp>>();

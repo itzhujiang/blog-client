@@ -259,7 +259,11 @@ const tableMethod: TableMethodType<T> = {
     return tableDataRef.value!;
   },
   refresh: () => {
-    tableSearchCompRef.value?.reset();
+    if (tableSearchCompRef.value) {
+      tableSearchCompRef.value?.reset();
+    } else {
+      handleRequest({});
+    }
   },
 };
 </script>

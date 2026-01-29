@@ -64,19 +64,24 @@ export async function analysisMd(url: string): Promise<{ mdhtml: string; urls: s
   }
 }
 
-type MapType = {
+export type MapType = {
   label: string;
   value: string | number;
 };
 
 /**
  * 数组转映射
- * @param arr
+ * @param { MapType } arr 数组
+ * @param 谁为键
  * @returns
  */
-export const arrToMap = (arr: MapType[]) => {
+export const arrToMap = (arr: MapType[], key: 'label' | 'value' = 'value') => {
   const result = arr.reduce((obj: Record<string, string | number>, item) => {
-    obj[item.value] = item.label;
+    if (key === 'value') {
+      obj[item.value] = item.label;
+    } else {
+      obj[item.label] = item.value;
+    }
     return obj;
   }, {});
   return result;

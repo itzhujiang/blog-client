@@ -197,6 +197,7 @@
         <template v-else-if="item.type === 'component'">
           <component
             :is="item.component"
+            :ref="(el: ComponentPublicInstance) => setComponentRef(el, item.dataIndex)"
             v-bind="{
               ...item,
               formState,
@@ -227,7 +228,8 @@
 <script setup lang="ts">
 import type { FormInstance } from 'ant-design-vue';
 import { cloneDeep } from 'lodash';
-import { reactive, watchEffect, nextTick, ref } from 'vue';
+import { shallowReactive, watchEffect, nextTick, ref, reactive } from 'vue';
+import type { ComponentPublicInstance } from 'vue';
 
 import DateTimeRangePickerComp from '../dateTimeRangePicker/index.vue';
 import TimeRangePickerComp from '../timeRangePicker/index.vue';
@@ -265,12 +267,17 @@ defineExpose({
   reset: () => {
     Object.assign(formState, cloneDeep(backupFormState));
   },
+  /** 获取自定义组件的实例 */
+  getComponetRef: (): Record<string, ComponentPublicInstance> => {
+    return componentRefs.value;
+  },
 });
 
 const formState = reactive<Record<string, unknown>>({});
 const backupFormState: Record<string, unknown> = {};
-const configuration = reactive(cloneDeep(props.config));
+const configuration = shallowReactive(cloneDeep(props.config));
 const formRef = ref<FormInstance | null>(null);
+const componentRefs = ref<Record<string, ComponentPublicInstance>>({});
 
 watchEffect(() => {
   Object.keys(formState).forEach(key => {
@@ -330,6 +337,18 @@ const onFormStateUpdate = (
   formState[item.dataIndex] = value.start && value.end ? [value.start, value.end] : undefined;
   formState[dataIndexArr[0]!] = value.start;
   formState[dataIndexArr[1]!] = value.end;
+};
+
+/**
+ * 设置compoent自定义组件的ref
+ */
+const setComponentRef = (el: ComponentPublicInstance, key: string) => {
+  if (el) {
+    componentRefs.value[key as string] = el;
+  } else {
+    // 组件卸载时清理
+    delete componentRefs.value[key as string];
+  }
 };
 </script>
 

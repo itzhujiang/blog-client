@@ -2,47 +2,46 @@
 <template>
   <div>
     <AModal
-    v-model:open="visibleRef"
-    :title="configRef?.title"
-    :width="configRef?.width || 520" 
-    :confirmLoading="confirmLoadingRef"
-    v-bind="configRef?.props"
-    :bodyStyle="{
-       'max-height': '70vh',
-       'overflow-y': 'auto',
-    }"
-    @cancel="onCancel"
-    @ok="onSubmitOk"
+      v-model:open="visibleRef"
+      :title="configRef?.title"
+      :width="configRef?.width || 520"
+      :confirmLoading="confirmLoadingRef"
+      v-bind="configRef?.props"
+      :bodyStyle="{
+        'max-height': '70vh',
+        'overflow-y': 'auto',
+      }"
+      @cancel="onCancel"
+      @ok="onSubmitOk"
     >
-        <FormComp
+      <FormComp
         v-if="visibleRef"
         ref="formCompRef"
         :config="{
           data: configRef!.data,
           columns: configRef!.columns,
           watchEffectFn: configRef?.watchEffectFn,
-          labelCol: configRef?.labelCol
+          labelCol: configRef?.labelCol,
         }"
-        ></FormComp>
+      ></FormComp>
     </AModal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { message } from 'ant-design-vue';
-import { ref } from 'vue';
 import { cloneDeep } from 'lodash';
+import { ref } from 'vue';
 
 import FormComp from '../form/index.vue';
 import type { PupUpFormBoxConfig } from '../utils/popUpFormBoxType';
 import { switchType } from '../utils/utils';
 
 defineOptions({
-  name: 'PopUpFormBox'
+  name: 'PopUpFormBox',
 });
 
-
-const defaultConfig:PupUpFormBoxConfig = {
+const defaultConfig: PupUpFormBoxConfig = {
   title: '',
   columns: [],
   data: {},
@@ -50,35 +49,34 @@ const defaultConfig:PupUpFormBoxConfig = {
     return {
       code: 200,
       data: null,
-      msg: ''
+      msg: '',
     };
   },
-  beforeRequest: (params) => params,
-  afterResponse: (res) => {
+  beforeRequest: (params: Record<string, unknown>) => params,
+  afterResponse: res => {
     return {
       isMsg: true,
       msg: res.msg,
-      type: switchType(res.code)
+      type: switchType(res.code),
     };
   },
-
-
 };
 
-
 defineExpose({
-  open: <TParams = Record<string, unknown>, TResponse = unknown>(config: PupUpFormBoxConfig<TParams, TResponse>) => {
+  open: <TParams = Record<string, unknown>, TResponse = unknown>(
+    config: PupUpFormBoxConfig<TParams, TResponse>
+  ) => {
     configRef.value = Object.assign({}, defaultConfig, cloneDeep(config)) as PupUpFormBoxConfig;
-    cacheData.value = cloneDeep(config.data)
+    cacheData.value = cloneDeep(config.data);
     visibleRef.value = true;
-  }
+  },
 });
 
 const confirmLoadingRef = ref<boolean>(false);
 const formCompRef = ref<InstanceType<typeof FormComp>>();
 const configRef = ref<PupUpFormBoxConfig | null>(null);
 const visibleRef = ref<boolean>(false);
-const cacheData = ref<Record<string, unknown>>()
+const cacheData = ref<Record<string, unknown>>();
 
 /**
  * 点击确定
@@ -88,7 +86,10 @@ const onSubmitOk = async () => {
     confirmLoadingRef.value = true;
     await formCompRef.value?.getRef()?.validate();
     const data = formCompRef.value?.getFormState();
-    const params = await configRef.value?.beforeRequest?.(data || {});
+    const params = await configRef.value?.beforeRequest?.(
+      data || {},
+      formCompRef.value!.getComponetRef
+    );
     if (!params) {
       confirmLoadingRef.value = false;
       return;
@@ -107,21 +108,15 @@ const onSubmitOk = async () => {
   } finally {
     confirmLoadingRef.value = false;
   }
-
 };
-
-
 
 /**
  * 点击取消
  */
 const onCancel = () => {
   formCompRef.value?.reset();
-  configRef.value!.data = cacheData.value!
+  configRef.value!.data = cacheData.value!;
 };
-
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

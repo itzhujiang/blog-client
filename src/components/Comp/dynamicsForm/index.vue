@@ -1,10 +1,10 @@
 <template>
   <div class="dynamics-form-container">
     <AButton v-if="mergedConfig.showAddButton" type="primary" @click="onAddClick"> 添加 </AButton>
-    <AForm ref="formRef" :model="{ tableData }">
+    <AForm ref="formRef" :model="{ modelValue }">
       <ATable
         size="small"
-        :data-source="tableData"
+        :data-source="modelValue"
         :columns="tableColumns"
         :bordered="true"
         :scroll="mergedConfig.height ? { y: mergedConfig.height } : undefined"
@@ -16,7 +16,7 @@
             <template v-if="column.xtype === 'input'">
               <AFormItem
                 v-if="column.rules"
-                :name="['tableData', index, column.dataIndex]"
+                :name="['modelValue', index, column.dataIndex]"
                 :rules="column.rules"
               >
                 <AInput
@@ -41,7 +41,7 @@
             <template v-else-if="column.xtype === 'number'">
               <AFormItem
                 v-if="column.rules"
-                :name="['tableData', index, column.dataIndex]"
+                :name="['modelValue', index, column.dataIndex]"
                 :rules="column.rules"
               >
                 <AInputNumber
@@ -74,7 +74,7 @@
             <template v-else-if="column.xtype === 'datePicker'">
               <AFormItem
                 v-if="column.rules"
-                :name="['tableData', index, column.dataIndex]"
+                :name="['modelValue', index, column.dataIndex]"
                 :rules="column.rules"
               >
                 <ADatePicker
@@ -117,7 +117,7 @@
             <template v-else-if="column.xtype === 'timePicker'">
               <AFormItem
                 v-if="column.rules"
-                :name="['tableData', index, column.dataIndex]"
+                :name="['modelValue', index, column.dataIndex]"
                 :rules="column.rules"
               >
                 <ATimePicker
@@ -164,7 +164,7 @@
             <template v-else-if="column.xtype === 'dateTimePicker'">
               <AFormItem
                 v-if="column.rules"
-                :name="['tableData', index, column.dataIndex]"
+                :name="['modelValue', index, column.dataIndex]"
                 :rules="column.rules"
               >
                 <ADatePicker
@@ -209,7 +209,7 @@
             <template v-else-if="column.xtype === 'select'">
               <AFormItem
                 v-if="column.rules"
-                :name="['tableData', index, column.dataIndex]"
+                :name="['modelValue', index, column.dataIndex]"
                 :rules="column.rules"
               >
                 <ASelect
@@ -258,7 +258,7 @@
             <template v-else-if="column.xtype === 'component'">
               <AFormItem
                 v-if="column.rules"
-                :name="['tableData', index, column.dataIndex]"
+                :name="['modelValue', index, column.dataIndex]"
                 :rules="column.rules"
               >
                 <component
@@ -302,8 +302,10 @@
 </template>
 
 <script setup lang="ts">
+import type { FormInstance } from 'ant-design-vue';
+import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, shallowRef, watchEffect } from 'vue';
 
 import type {
   DynamicsFormType,
@@ -322,7 +324,15 @@ const props = defineProps<{
 
 const modelValue = defineModel<Record<string, unknown>[]>({ default: () => [] });
 
-const formRef = ref();
+const formRef = ref<FormInstance | null>(null);
+
+defineExpose<{
+  getRef: () => FormInstance | null;
+}>({
+  getRef: () => {
+    return formRef.value;
+  },
+});
 
 const defaultConfig: DynamicsFormType = {
   showAddButton: true,
@@ -330,7 +340,7 @@ const defaultConfig: DynamicsFormType = {
   operate: [],
 };
 
-const mergedConfig = ref<DynamicsFormType>({ ...defaultConfig });
+const mergedConfig = shallowRef<DynamicsFormType>({ ...defaultConfig });
 
 watch(
   () => props.config,
@@ -340,11 +350,30 @@ watch(
   { deep: true, immediate: true }
 );
 
-const tableData = computed({
-  get: () => modelValue.value,
-  set: value => {
-    modelValue.value = value;
+const convertTimestampToDate = (data: Record<string, unknown>[], columns: FormItemType[]) => {
+  data.forEach(record => {
+    columns.forEach(column => {
+      if (
+        (column.xtype === 'datePicker' || column.xtype === 'dateTimePicker') &&
+        typeof record[column.dataIndex] === 'number'
+      ) {
+        record[column.dataIndex] = dayjs(record[column.dataIndex] as number);
+      }
+    });
+  });
+};
+
+// 监听 modelValue 变化，转换时间戳为 dayjs 对象
+watch(
+  () => modelValue.value,
+  value => {
+    convertTimestampToDate(value, mergedConfig.value.columns);
   },
+  { immediate: true }
+);
+
+watchEffect(() => {
+  console.log('modelValue', modelValue.value);
 });
 
 const tableColumns = computed(() => {
@@ -366,7 +395,7 @@ const tableColumns = computed(() => {
 });
 
 const onAddClick = () => {
-  tableData.value = [...tableData.value, {}];
+  modelValue.value = [...modelValue.value, {}];
 };
 
 const handlerDataChange = (
@@ -375,25 +404,19 @@ const handlerDataChange = (
   dataIndex: string,
   item: FormItemType
 ) => {
-  const newTableData = cloneDeep(tableData.value);
   if ('change' in item && typeof item.change === 'function') {
-    item.change(newTableData, index, value, dataIndex);
-    tableData.value = newTableData;
+    item.change(modelValue.value, index, value, dataIndex);
   }
 };
 
 const onHandleClick = (item: Operate, index: number) => {
   if (item.onClick) {
-    const result = item.onClick(cloneDeep(tableData.value), index);
+    const result = item.onClick(cloneDeep(modelValue.value), index);
     if (result && result.data) {
-      tableData.value = result.data;
+      modelValue.value = result.data;
     }
   }
 };
-
-defineExpose({
-  formRef,
-});
 </script>
 
 <style lang="less" scoped>
