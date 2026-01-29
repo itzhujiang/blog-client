@@ -43,7 +43,6 @@
               :key="option.value"
               :value="option.value"
               :disabled="option.disabled"
-              :allowClear="item.allowClear"
             >
               {{ option.label }}
             </ASelectOption>

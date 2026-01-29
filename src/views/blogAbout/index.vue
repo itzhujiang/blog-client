@@ -2,7 +2,6 @@
   <div class="about-container">
     <TableComp :config="config"></TableComp>
     <PreviewDialogComp ref="previewDialogCompRef"></PreviewDialogComp>
-    <!-- <DynamicsFormComp v-model="value" :config="dynamicsFormConfig"></DynamicsFormComp> -->
   </div>
 </template>
 
@@ -10,32 +9,19 @@
 import { ref } from 'vue';
 
 import { getAboutInfo, updateAboutInfo, type AboutInfo } from '@/api/blog/about';
-import { DynamicsFormComp, createDynamicsFormConfig } from '@/components/Comp/index';
+import { upload } from '@/api/blog/upload';
+import {
+  DynamicsFormComp,
+  UploadComp,
+  createDynamicsFormConfig,
+  type UploadResponseType,
+} from '@/components/Comp/index';
 import { TableComp, createTableConfig, PreviewDialogComp } from '@/components/Comp/index';
-import { mapToArr } from '@/utils/utils';
-// // import { mdToHtml } from '@/utils/utils';
+import { analysisMd, mapToArr } from '@/utils/utils';
 
 defineOptions({
   name: 'blogAbout',
 });
-
-// const value = ref([
-//   {
-//     title: '张三',
-//   },
-// ]);
-
-// const dynamicsFormConfig = createDynamicsFormConfig({
-//   showAddButton: true,
-//   height: 300,
-//   columns: [
-//     {
-//       title: '标题',
-//       dataIndex: 'title',
-//       xtype: 'input',
-//     },
-//   ],
-// });
 
 const config = createTableConfig<Record<string, unknown>, AboutInfo>({
   columns: [
@@ -141,6 +127,10 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
         console.log(row);
         comp.open({
           title: '修改',
+          width: '80%',
+          labelCol: {
+            span: 2,
+          },
           data: {
             id: row.id,
             contactInfo: mapToArr(row.contactInfo),
@@ -163,7 +153,7 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
               : '',
             personalTags: row.personalTags.join('、'),
             socialLinks: mapToArr(row.socialLinks),
-            skills: row.skills,
+            skills: JSON.stringify(row.skills, null, 2),
             timeline: row.timeline,
             isUpdateAvatar: false,
             isUpdateContent: false,
@@ -173,11 +163,13 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
               label: '职业标签',
               type: 'input',
               dataIndex: 'jobTitle',
+              rules: [{ required: true, message: '请输入职业标签' }],
             },
             {
               label: '个人标签',
               type: 'input',
               dataIndex: 'personalTags',
+              rules: [{ required: true, message: '请输入个人标签' }],
             },
             {
               label: '联系方式',
@@ -192,14 +184,151 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
                     title: '键',
                     dataIndex: 'label',
                     xtype: 'input',
+                    rules: [{ required: true, message: '请输入联系方式的键' }],
                   },
                   {
                     title: '值',
                     dataIndex: 'value',
                     xtype: 'input',
+                    rules: [{ required: true, message: '请输入联系方式的值' }],
+                  },
+                ],
+                operate: [
+                  {
+                    label: '删除',
+                    onClick: (data, index) => {
+                      data.splice(index, 1);
+                      return {
+                        data,
+                      };
+                    },
                   },
                 ],
               }),
+              rules: [{ required: true, message: '请输入联系方式' }],
+            },
+            {
+              label: '头像',
+              type: 'component',
+              component: UploadComp,
+              dataIndex: 'avatarCode',
+              config: {
+                multiple: false,
+                fileSize: 2,
+                apiUrl: handleUpload,
+                type: ['image/png', 'image/jpeg', 'image/jpg'],
+              },
+            },
+            {
+              label: '内容',
+              type: 'component',
+              component: UploadComp,
+              dataIndex: 'contentCode',
+              config: {
+                multiple: false,
+                fileSize: 2,
+                apiUrl: handleUpload,
+                type: ['md'],
+                onPreview: async (data: { code: string; url: string }) => {
+                  console.log(data);
+                  const content = (await analysisMd(data.url)).mdhtml
+                  previewDialogCompRef.value?.open({
+                    title: '内容',
+                    content,
+                  });
+                },
+              },
+            },
+            {
+              label: '社交媒体',
+              type: 'component',
+              component: DynamicsFormComp,
+              dataIndex: 'socialLinks',
+              config: createDynamicsFormConfig({
+                showAddButton: true,
+                height: 300,
+                columns: [
+                  {
+                    title: '键',
+                    dataIndex: 'label',
+                    xtype: 'input',
+                    placeholder: '请输入社交媒体的键',
+                    rules: [{ required: true, message: '请输入社交媒体的键' }],
+                  },
+                  {
+                    title: '值',
+                    dataIndex: 'value',
+                    xtype: 'input',
+                    placeholder: '请输入社交媒体的值',
+                    rules: [{ required: true, message: '请输入社交媒体的值' }],
+                  },
+                ],
+                operate: [
+                  {
+                    label: '删除',
+                    onClick: (data, index) => {
+                      data.splice(index, 1);
+                      return {
+                        data,
+                      };
+                    },
+                  },
+                ],
+              }),
+              rules: [{ required: true, message: '请输入社交媒体' }],
+            },
+            {
+              label: '成长足迹',
+              type: 'component',
+              component: DynamicsFormComp,
+              dataIndex: 'timeline',
+              config: createDynamicsFormConfig({
+                showAddButton: true,
+                height: 200,
+                columns: [
+                  {
+                    title: '时间',
+                    dataIndex: 'timestamp',
+                    xtype: 'datePicker',
+                    placeholder: '请选择时间',
+                    rules: [{ required: true, message: '请选择时间' }],
+                  },
+                  {
+                    title: '标题',
+                    dataIndex: 'title',
+                    xtype: 'input',
+                    placeholder: '请输入标题',
+                    rules: [{ required: true, message: '请输入标题' }],
+                  },
+                  {
+                    title: '描述',
+                    dataIndex: 'description',
+                    xtype: 'input',
+                    placeholder: '请输入描述',
+                    rules: [{ required: true, message: '请输入描述' }],
+                  },
+                ],
+                operate: [
+                  {
+                    label: '删除',
+                    onClick: (data, index) => {
+                      data.splice(index, 1);
+                      return {
+                        data,
+                      };
+                    },
+                  },
+                ],
+              }),
+              rules: [{ required: true, message: '请输入成长足迹' }],
+            },
+            {
+              label: '技能专长',
+              type: 'textarea',
+              dataIndex: 'skills',
+              placeholder: '请输入技能专长',
+              rows: 10,
+              rules: [{ required: true, message: '请输入技能专长' }],
             },
           ],
           api: updateAboutInfo,
@@ -211,6 +340,19 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
 });
 
 const previewDialogCompRef = ref<InstanceType<typeof PreviewDialogComp>>();
+
+const handleUpload = async (file: File): Promise<UploadResponseType> => {
+  const res = await upload(file);
+  return {
+    code: res.code,
+    data: {
+      code: res.data!.data.code,
+      size: res.data!.data.size,
+      url: res.data!.data.url,
+    },
+    msg: res.msg,
+  };
+};
 </script>
 
 <style lang="less" scoped></style>

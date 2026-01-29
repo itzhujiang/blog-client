@@ -20,22 +20,22 @@
                 :rules="column.rules"
               >
                 <AInput
-                  :value="record[column.dataIndex]"
+                  v-model:value="record[column.dataIndex]"
                   :placeholder="column.placeholder"
                   v-bind="
                     column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
                   "
-                  @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                  @change="handlerDataChange(index, $event.target.value, column.dataIndex, column)"
                 />
               </AFormItem>
               <AInput
                 v-else
-                :value="record[column.dataIndex]"
+                v-model:value="record[column.dataIndex]"
                 :placeholder="column.placeholder"
                 v-bind="
                   column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
                 "
-                @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                @change="handlerDataChange(index, $event.target.value, column.dataIndex, column)"
               />
             </template>
             <template v-else-if="column.xtype === 'number'">
@@ -45,7 +45,7 @@
                 :rules="column.rules"
               >
                 <AInputNumber
-                  :value="record[column.dataIndex]"
+                  v-model:value="record[column.dataIndex]"
                   :min="column.min"
                   :max="column.max"
                   :step="column.step"
@@ -54,12 +54,12 @@
                     column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
                   "
                   style="width: 100%"
-                  @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                  @change="handlerDataChange(index, $event.target.value, column.dataIndex, column)"
                 />
               </AFormItem>
               <AInputNumber
                 v-else
-                :value="record[column.dataIndex]"
+                v-model:value="record[column.dataIndex]"
                 :min="column.min"
                 :max="column.max"
                 :step="column.step"
@@ -68,7 +68,7 @@
                   column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
                 "
                 style="width: 100%"
-                @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                @change="handlerDataChange(index, $event.target.value, column.dataIndex, column)"
               />
             </template>
             <template v-else-if="column.xtype === 'datePicker'">
@@ -78,26 +78,40 @@
                 :rules="column.rules"
               >
                 <ADatePicker
-                  :value="record[column.dataIndex]"
+                  v-model:value="record[column.dataIndex]"
                   style="width: 100%"
-                  :picker="column.picker"
+                  :allowClear="column.allowClear"
                   :placeholder="column.placeholder"
+                  :disabled="column.disabled"
+                  :showToday="column.showToday"
+                  :picker="column.picker"
+                  :disabledDate="column.disabledDate"
+                  valueFormat="x"
                   v-bind="
                     column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
                   "
-                  @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                  @change="
+                    handlerDataChange(index, record[column.dataIndex], column.dataIndex, column)
+                  "
                 />
               </AFormItem>
               <ADatePicker
                 v-else
-                :value="record[column.dataIndex]"
+                v-model:value="record[column.dataIndex]"
                 style="width: 100%"
-                :picker="column.picker"
+                :allowClear="column.allowClear"
                 :placeholder="column.placeholder"
+                :disabled="column.disabled"
+                :showToday="column.showToday"
+                :picker="column.picker"
+                :disabledDate="column.disabledDate"
+                valueFormat="x"
                 v-bind="
                   column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
                 "
-                @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                @change="
+                  handlerDataChange(index, record[column.dataIndex], column.dataIndex, column)
+                "
               />
             </template>
             <template v-else-if="column.xtype === 'timePicker'">
@@ -107,24 +121,44 @@
                 :rules="column.rules"
               >
                 <ATimePicker
-                  :value="record[column.dataIndex]"
+                  v-model:value="record[column.dataIndex]"
                   style="width: 100%"
                   :placeholder="column.placeholder"
+                  :allowClear="column.allowClear"
+                  :format="column.format || 'HH:mm:ss'"
+                  :disabled="column.disabled"
+                  :showNow="column.showNow"
+                  :secondStep="column.secondStep"
+                  :hourStep="column.hourStep"
+                  :minuteStep="column.minuteStep"
+                  :valueFormat="column.format || 'HH:mm:ss'"
                   v-bind="
                     column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
                   "
-                  @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                  @change="
+                    handlerDataChange(index, record[column.dataIndex], column.dataIndex, column)
+                  "
                 />
               </AFormItem>
               <ATimePicker
                 v-else
-                :value="record[column.dataIndex]"
+                v-model:value="record[column.dataIndex]"
                 style="width: 100%"
                 :placeholder="column.placeholder"
+                :allowClear="column.allowClear"
+                :format="column.format || 'HH:mm:ss'"
+                :disabled="column.disabled"
+                :showNow="column.showNow"
+                :secondStep="column.secondStep"
+                :hourStep="column.hourStep"
+                :minuteStep="column.minuteStep"
+                :valueFormat="column.format || 'HH:mm:ss'"
                 v-bind="
                   column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
                 "
-                @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                @change="
+                  handlerDataChange(index, record[column.dataIndex], column.dataIndex, column)
+                "
               />
             </template>
             <template v-else-if="column.xtype === 'dateTimePicker'">
@@ -134,26 +168,42 @@
                 :rules="column.rules"
               >
                 <ADatePicker
-                  :value="record[column.dataIndex]"
+                  v-model:value="record[column.dataIndex]"
                   style="width: 100%"
                   show-time
+                  :allowClear="column.allowClear"
                   :placeholder="column.placeholder"
+                  :disabled="column.disabled"
+                  :showToday="column.showToday"
+                  :picker="column.picker"
+                  :disabledDate="column.disabledDate"
+                  valueFormat="x"
                   v-bind="
                     column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
                   "
-                  @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                  @change="
+                    handlerDataChange(index, record[column.dataIndex], column.dataIndex, column)
+                  "
                 />
               </AFormItem>
               <ADatePicker
                 v-else
-                :value="record[column.dataIndex]"
+                v-model:value="record[column.dataIndex]"
                 style="width: 100%"
                 show-time
                 :placeholder="column.placeholder"
+                :disabled="column.disabled"
+                :disabledDate="column.disabledDate"
+                :disabledTime="column.disabledTime"
+                valueFormat="x"
+                :showToday="column.showToday"
+                :allowClear="column.allowClear"
                 v-bind="
                   column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
                 "
-                @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                @change="
+                  handlerDataChange(index, record[column.dataIndex], column.dataIndex, column)
+                "
               />
             </template>
             <template v-else-if="column.xtype === 'select'">
@@ -163,15 +213,16 @@
                 :rules="column.rules"
               >
                 <ASelect
-                  :value="record[column.dataIndex]"
+                  v-model:value="record[column.dataIndex]"
                   :placeholder="column.placeholder"
+                  :disabled="column.disabled"
                   :mode="column.mode"
-                  :allow-clear="column.allowClear !== false"
+                  :allowClear="column.allowClear"
                   style="width: 100%"
                   v-bind="
                     column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
                   "
-                  @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                  @change="handlerDataChange(index, $event, column.dataIndex, column)"
                 >
                   <ASelectOption
                     v-for="op in column.options"
@@ -184,10 +235,11 @@
               </AFormItem>
               <ASelect
                 v-else
-                :value="record[column.dataIndex]"
+                v-model:value="record[column.dataIndex]"
                 :placeholder="column.placeholder"
+                :disabled="column.disabled"
                 :mode="column.mode"
-                :allow-clear="column.allowClear !== false"
+                :allowClear="column.allowClear"
                 style="width: 100%"
                 v-bind="
                   column.propsFn ? column.propsFn(record[column.dataIndex], record) : column.props
@@ -211,23 +263,27 @@
               >
                 <component
                   :is="column.component"
+                  v-model:value="record[column.dataIndex]"
                   :config="column"
-                  :value="record[column.dataIndex]"
                   :scope="{ row: record, $index: index }"
-                  @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                  @update:value="
+                    handlerDataChange(index, record[column.dataIndex], column.dataIndex, column)
+                  "
                 />
               </AFormItem>
               <component
                 :is="column.component"
                 v-else
+                v-model:value="record[column.dataIndex]"
                 :config="column"
-                :value="record[column.dataIndex]"
                 :scope="{ row: record, $index: index }"
-                @update:value="handlerDataChange(index, $event, column.dataIndex, column)"
+                @update:value="
+                  handlerDataChange(index, record[column.dataIndex], column.dataIndex, column)
+                "
               />
             </template>
           </template>
-          <template v-else>
+          <template v-if="column.xtype === 'operate'">
             <span v-for="(item, idx) in mergedConfig.operate" :key="idx">
               <AButton
                 v-if="item.isShowFn ? item.isShowFn(record) : true"
@@ -320,11 +376,10 @@ const handlerDataChange = (
   item: FormItemType
 ) => {
   const newTableData = cloneDeep(tableData.value);
-  newTableData[index]![dataIndex] = value;
   if ('change' in item && typeof item.change === 'function') {
     item.change(newTableData, index, value, dataIndex);
+    tableData.value = newTableData;
   }
-  tableData.value = newTableData;
 };
 
 const onHandleClick = (item: Operate, index: number) => {

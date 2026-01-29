@@ -7,6 +7,10 @@
     :width="configRef?.width || 520" 
     :confirmLoading="confirmLoadingRef"
     v-bind="configRef?.props"
+    :bodyStyle="{
+       'max-height': '70vh',
+       'overflow-y': 'auto',
+    }"
     @cancel="onCancel"
     @ok="onSubmitOk"
     >

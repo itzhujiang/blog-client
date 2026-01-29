@@ -70,7 +70,8 @@ const dialogConfigRef = reactive<PreviewDialogConfig>({
     color: #333;
     word-wrap: break-word;
     word-break: break-word;
-
+    max-height: 500px;
+    overflow: auto;
     // 优化内容排版
     :deep(p) {
       margin-bottom: 12px;
@@ -80,7 +81,12 @@ const dialogConfigRef = reactive<PreviewDialogConfig>({
       }
     }
 
-    :deep(h1), :deep(h2), :deep(h3), :deep(h4), :deep(h5), :deep(h6) {
+    :deep(h1),
+    :deep(h2),
+    :deep(h3),
+    :deep(h4),
+    :deep(h5),
+    :deep(h6) {
       margin-top: 16px;
       margin-bottom: 12px;
       font-weight: 600;
@@ -91,7 +97,8 @@ const dialogConfigRef = reactive<PreviewDialogConfig>({
       }
     }
 
-    :deep(ul), :deep(ol) {
+    :deep(ul),
+    :deep(ol) {
       padding-left: 24px;
       margin-bottom: 12px;
     }
@@ -153,4 +160,3 @@ const dialogConfigRef = reactive<PreviewDialogConfig>({
   }
 }
 </style>
-
