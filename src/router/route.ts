@@ -77,6 +77,17 @@ export const routes: RouteRecordRaw[] = [
               id: '0104',
             },
           },
+          {
+            name: 'siteSetting',
+            path: '/blog/siteSetting',
+            component: () => import('@/views/blogSiteSetting/index.vue'),
+            meta: {
+              title: '博客设置',
+              icon: 'setting',
+              showInMenu: true,
+              id: '0105',
+            },
+          },
         ],
       },
     ],

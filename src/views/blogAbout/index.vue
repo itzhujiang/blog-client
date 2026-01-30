@@ -2,6 +2,15 @@
   <div class="about-container">
     <TableComp :config="config"></TableComp>
     <PreviewDialogComp ref="previewDialogCompRef"></PreviewDialogComp>
+    <AImage
+      :width="200"
+      :style="{ display: 'none' }"
+      :preview="{
+        visible: visibleImageRef,
+        onVisibleChange: setvisibleImage,
+      }"
+      :src="imgUrlRef"
+    />
   </div>
 </template>
 
@@ -17,8 +26,11 @@ import {
   type UploadResponseType,
   type UploadModelValueType,
   switchType,
+  TableComp,
+  createTableConfig,
+  PreviewDialogComp,
 } from '@/components/Comp/index';
-import { TableComp, createTableConfig, PreviewDialogComp } from '@/components/Comp/index';
+import { FILE_DOMAIN } from '@/utils/constants';
 import { analysisMd, arrToMap, mapToArr, type MapType } from '@/utils/utils';
 
 defineOptions({
@@ -44,6 +56,19 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
       xtype: 'text',
     },
     {
+      title: '头像',
+      dataIndex: 'avatarUrl',
+      xtype: 'render',
+      render: () => {
+        return '<a>查看</a>';
+      },
+      onClick: async value => {
+        console.log('value', value);
+        imgUrlRef.value = value as string;
+        visibleImageRef.value = true;
+      },
+    },
+    {
       title: '内容',
       dataIndex: 'contentUrl',
       xtype: 'render',
@@ -51,9 +76,10 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
         return '<a>查看</a>';
       },
       onClick: async value => {
+        const { mdhtml } = await analysisMd((FILE_DOMAIN + value) as string);
         previewDialogCompRef.value?.open({
           title: '内容',
-          content: value as string,
+          content: mdhtml,
         });
       },
     },
@@ -207,13 +233,13 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
                   },
                 ],
               }),
-              // rules: [{ required: true, message: '请输入联系方式' }],
+              rules: [{ required: true, message: '请输入联系方式' }],
             },
             {
               label: '头像',
               type: 'component',
               component: UploadComp,
-              dataIndex: 'avatarCode',
+              dataIndex: 'avatar',
               config: {
                 multiple: false,
                 fileSize: 2,
@@ -225,7 +251,7 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
               label: '内容',
               type: 'component',
               component: UploadComp,
-              dataIndex: 'contentCode',
+              dataIndex: 'content',
               config: {
                 multiple: false,
                 fileSize: 2,
@@ -277,6 +303,7 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
                   },
                 ],
               }),
+              rules: [{ required: true, message: '请输入社交媒体' }],
             },
             {
               label: '成长足迹',
@@ -321,7 +348,7 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
                   },
                 ],
               }),
-              // rules: [{ required: true, message: '请输入成长足迹' }],
+              rules: [{ required: true, message: '请输入成长足迹' }],
             },
             {
               label: '技能专长',
@@ -329,7 +356,7 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
               dataIndex: 'skill',
               placeholder: '请输入技能专长',
               rows: 10,
-              // rules: [{ required: true, message: '请输入技能专长' }],
+              rules: [{ required: true, message: '请输入技能专长' }],
             },
           ],
           api: updateAboutInfo,
@@ -403,6 +430,15 @@ const config = createTableConfig<Record<string, unknown>, AboutInfo>({
 });
 
 const previewDialogCompRef = ref<InstanceType<typeof PreviewDialogComp>>();
+const visibleImageRef = ref<boolean>(false); // 展示图片预览
+const imgUrlRef = ref<string>();
+
+/**
+ * 设置图片预览隐藏
+ */
+const setvisibleImage = () => {
+  visibleImageRef.value = false;
+};
 
 const handleUpload = async (file: File): Promise<UploadResponseType> => {
   const res = await upload(file);
