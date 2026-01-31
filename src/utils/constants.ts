@@ -24,3 +24,12 @@ export const COMMENT_STATUS_OPTION = [
 ];
 
 export const COMMENT_STATUS_MAP = arrToMap(COMMENT_STATUS_OPTION);
+
+export const SETTING_TYPE_OPTION = [
+  { label: '字符串', value: 'string' },
+  { label: '数字', value: 'number' },
+  { label: 'json', value: 'json' },
+  { label: '布尔值', value: 'boolean' },
+];
+
+export const SETTING_TYPE_MAP = arrToMap(SETTING_TYPE_OPTION);
