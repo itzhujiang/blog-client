@@ -18,13 +18,16 @@ import type {
   EditArticleRequestType,
 } from '@/api/blog/article';
 import { getArticleList, addArticle, editArticle } from '@/api/blog/article';
+import { getCategoryList, type CategoryList } from '@/api/blog/category';
 import { upload } from '@/api/blog/upload';
 import {
   TableComp,
   createTableConfig,
   UploadComp,
+  RemoteSearchSelectComp,
   createFormConfig,
   type UploadResponseType,
+  createPopUpFormConfig,
 } from '@/components/Comp/index';
 import FileSelectComp from '@/components/FileSelect/index.vue';
 import { FILE_DOMAIN } from '@/utils/constants';
@@ -44,7 +47,7 @@ const PopUpFormConfig = <T extends 'add' | 'edit'>(
   type: T,
   data: T extends 'add' ? AddArticleRequestType : EditArticleRequestType
 ) => {
-  return {
+  return createPopUpFormConfig({
     title: type === 'add' ? '添加文章' : '修改文章',
     width: '40%',
     labelCol: {
@@ -144,8 +147,25 @@ const PopUpFormConfig = <T extends 'add' | 'edit'>(
         },
         {
           label: '分类',
-          type: 'input',
+          type: 'component',
+          component: RemoteSearchSelectComp,
           dataIndex: 'categories',
+          config: {
+            api: getCategoryList,
+            placeholder: '请选择分类',
+            labelkey: 'name',
+            valueKey: 'id',
+            multiple: true,
+            defaultSelectOption: [],
+            afterResponse: (data: CategoryList[], totalData: CategoryList[], total: number) => {
+              const isNextRequest = totalData.length + data.length < total;
+              return {
+                data,
+                isNextRequest,
+              };
+            },
+          },
+          rules: [{ required: true, message: '请选择分类' }],
         },
       ],
       watchEffectFn: async data => {
@@ -165,7 +185,22 @@ const PopUpFormConfig = <T extends 'add' | 'edit'>(
       },
     }),
     api: type === 'add' ? addArticle : editArticle,
-  };
+    beforeRequest: data => {
+      if (data.thumbnailList && Array.isArray(data.thumbnailList)) {
+        data.thumbnailCode = data.thumbnailList[0].code;
+        if (type === 'edit') {
+          data.isUpdateThumbnail = true;
+        }
+      }
+      if (data.articleList && Array.isArray(data.articleList)) {
+        data.articleCode = data.articleList[0].code;
+        if (type === 'edit') {
+          data.isUpdateArticle = true;
+        }
+      }
+      return data;
+    },
+  });
 };
 
 const config = createTableConfig<ArticleRequestType, ArticleList>({

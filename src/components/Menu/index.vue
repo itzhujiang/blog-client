@@ -199,7 +199,7 @@ const onMenuClcik: MenuProps['onClick'] = async item => {
   await router.push({
     name: pathName,
   });
-  if (historyRef.value.length >= 5) {
+  if (historyRef.value.length > 5) {
     historyRef.value.pop();
   }
   const id = handleSelctedKey();

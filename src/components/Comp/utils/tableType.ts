@@ -36,8 +36,8 @@ export interface TableConfig<
   /** 表格行的唯一标识字段，默认为 'id' */
   rowKey?: Extract<keyof T, string> | ((_record: T) => string | number);
   beforeRequest?:
-    | ((_params: RequestType<C>) => Promise<Record<string, unknown> | false>)
-    | ((_params: RequestType<C>) => RequestType<Record<string, unknown>> | false);
+    | ((_params: RequestType<C>) => Promise<RequestType<Record<string, unknown>> | false>)
+    | ((_params: RequestType<C>) => RequestType<Record<string, unknown> | false>);
   afterResponse?: (_res: ResponseType<T>) => void;
 }
 

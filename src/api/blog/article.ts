@@ -81,6 +81,10 @@ export const addArticle = async (data: AddArticleRequestType) =>
 export type EditArticleRequestType = AddArticleRequestType & {
   /** id */
   id: number;
+  /** 是否更新文章内容 */
+  isUpdateArticle?: boolean;
+  /** 是否更新缩略图 */
+  isUpdateThumbnail?: boolean;
 };
 
 /**

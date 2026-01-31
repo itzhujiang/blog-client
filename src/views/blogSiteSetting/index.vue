@@ -82,11 +82,13 @@ const config = createTableConfig({
       title: '站点key',
       dataIndex: 'settingKey',
       xtype: 'text',
+      line: true,
     },
     {
       title: '站点值',
       dataIndex: 'settingValue',
       xtype: 'text',
+      line: true,
     },
     {
       title: '站点值类型',
@@ -100,6 +102,7 @@ const config = createTableConfig({
       title: '描述',
       dataIndex: 'description',
       xtype: 'text',
+      line: true,
     },
     {
       title: '更新时间',

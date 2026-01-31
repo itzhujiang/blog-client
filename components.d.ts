@@ -48,6 +48,7 @@ declare module 'vue' {
     Preview: typeof import('./src/components/Comp/upload/components/Preview.vue')['default']
     PreviewDialog: typeof import('./src/components/Comp/previewDialog/index.vue')['default']
     PullToLoadSelect: typeof import('./src/components/Comp/pullToLoadSelect/index.vue')['default']
+    RemoteSearchSelect: typeof import('./src/components/Comp/remoteSearchSelect/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Table: typeof import('./src/components/Comp/table/index.vue')['default']

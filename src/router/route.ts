@@ -90,6 +90,29 @@ export const routes: RouteRecordRaw[] = [
           },
         ],
       },
+      {
+        name: 'system',
+        path: '/system',
+        meta: {
+          title: '系统管理',
+          icon: 'system',
+          showInMenu: true,
+          id: '02',
+        },
+        children: [
+          {
+            name: 'systemUser',
+            path: '/system/user',
+            component: () => import('@/views/systemUser/index.vue'),
+            meta: {
+              title: '用户管理',
+              icon: 'user',
+              showInMenu: true,
+              id: '0201',
+            },
+          },
+        ],
+      },
     ],
   },
 ];

@@ -55,7 +55,9 @@ export default defineConfig([
         location: 'readonly',
         history: 'readonly',
         FileReader: 'readonly',
-        fetch: 'readonly'
+        fetch: 'readonly',
+        Event: 'readonly',
+        HTMLElement: 'readonly',
       },
     },
   },
@@ -153,7 +155,7 @@ export default defineConfig([
       'no-void': 'error',
 
       // 禁止使用一元 ++ 和 --
-      'no-plusplus': 'error',
+      'no-plusplus': 'off',
     },
   },
 

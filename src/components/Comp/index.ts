@@ -2,6 +2,7 @@ import DynamicsFormComp from './dynamicsForm/index.vue';
 import FormComp from './form/index.vue';
 import PopUpFormBoxComp from './popUpFormBox/index.vue';
 import PreviewDialogComp from './previewDialog/index.vue';
+import RemoteSearchSelectComp from './remoteSearchSelect/index.vue';
 import TableComp from './table/index.vue';
 import SearchComp from './table/tableSearch/index.vue';
 import UploadComp from './upload/index.vue';
@@ -32,6 +33,7 @@ export {
   PreviewDialogComp,
   DynamicsFormComp,
   createDynamicsFormConfig,
+  RemoteSearchSelectComp,
 };
 
 export type {
