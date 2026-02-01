@@ -42,9 +42,7 @@ const history = computed<HistoryType[] | undefined>(() => menuCompRef.value?.get
   box-sizing: border-box;
   .content {
     box-sizing: border-box;
-    background-color: @white;
     height: 100%;
-    border-top: 1px solid @gray;
   }
 }
 </style>

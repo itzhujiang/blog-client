@@ -21,7 +21,7 @@ export type ArticleRequestType = {
 
 export type ArticleList = {
   /** id */
-  id: number;
+  id: number | null;
   /** 文章标题 */
   title: string;
   /** url标识 */
@@ -65,7 +65,10 @@ export type AddArticleRequestType = {
   /** 文章内容code */
   articleCode: string;
   /** 附件code数组 */
-  attachmentCode?: string[];
+  attachmentList?: {
+    code: string;
+    source: string;
+  }[];
   /** 分类数组 */
   categories: number[];
 };
@@ -92,3 +95,16 @@ export type EditArticleRequestType = AddArticleRequestType & {
  */
 export const editArticle = async (data: EditArticleRequestType) =>
   await instance.put<EditArticleRequestType, null, 'obj'>('/api/blog/article/updateArticle', data);
+
+export const delArticle = async (id: number) =>
+  await instance.delete<
+    {
+      id: number;
+    },
+    null,
+    'obj'
+  >('/api/blog/article/delArticle', {
+    params: {
+      id,
+    },
+  });

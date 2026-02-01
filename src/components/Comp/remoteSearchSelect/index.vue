@@ -8,7 +8,7 @@
         value: config.valueKey,
       }"
       :placeholder="config.placeholder"
-      style="width: 200px"
+      style="width: 100%"
       :mode="config.multiple ? 'multiple' : undefined"
       :options="optionsRef"
       :filter-option="onSearch"
@@ -51,6 +51,9 @@ watch(
   () => props.config.defaultSelectOption,
   () => {
     optionsRef.value = props.config.defaultSelectOption || [];
+  },
+  {
+    immediate: true,
   }
 );
 
@@ -118,6 +121,8 @@ const getRequestFn = (params: RequestType<Record<string, unknown>>) => {
  * @param input 搜索值
  */
 const onSearch = async (input: string) => {
+  console.log('进入了', input);
+
   await handleRequestFn(input);
 };
 /** 处理下拉聚焦 */

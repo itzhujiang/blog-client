@@ -58,6 +58,7 @@ export default defineConfig([
         fetch: 'readonly',
         Event: 'readonly',
         HTMLElement: 'readonly',
+        HTMLVideoElement: 'readonly',
       },
     },
   },
@@ -193,7 +194,6 @@ export default defineConfig([
           alphabetical: false,
         },
       ],
-
 
       // 强制使用 v-bind 简写
       'vue/v-bind-style': ['error', 'shorthand'],

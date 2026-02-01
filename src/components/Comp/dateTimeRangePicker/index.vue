@@ -10,10 +10,12 @@
     :allowClear="config.allowClear"
     valueFormat="x"
     style="width: 100%"
+    @change="onRangeChange"
   />
 </template>
 
 <script setup lang="ts">
+import dayjs from 'dayjs';
 import { computed } from 'vue';
 
 import type { DateTimerangePickerTableSearch } from '../utils/searchTypes';
@@ -65,6 +67,18 @@ const placeholder = computed(() => {
   const dataIndexArr = handleVerticalLine(props.config.placeholder);
   return dataIndexArr;
 });
+
+/**
+ * 日期发生变化
+ */
+const onRangeChange = (data: string[]) => {
+  if (!props.config.showTime) {
+    dateTimeRange.value = [
+      dayjs(Number(data[0])).startOf('day').valueOf(),
+      dayjs(Number(data[1])).endOf('day').valueOf(),
+    ];
+  }
+};
 </script>
 
 <style lang="less" scoped></style>
