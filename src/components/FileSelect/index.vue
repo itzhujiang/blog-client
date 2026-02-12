@@ -3,23 +3,25 @@
   <div class="file-select-container">
     <AButton type="primary" @click="onOpenClick">上传附件</AButton>
     <AModal v-model:open="visibleRef" title="附件映射" @ok="onOk">
-      <div v-for="item in listRef" :key="item.source" class="item">
-        <div class="source">
-          {{ item.source }}
-        </div>
-        <div class="icon">
-          <IconComp type="jiantou_xiangyou"></IconComp>
-        </div>
-        <div class="upload">
-          <UploadComp
-            v-model="item.file"
-            :config="{
-              apiUrl: handleUpload,
-              fileSize: 10,
-              multiple: false,
-              type: ['image/jpeg', 'image/png'],
-            }"
-          ></UploadComp>
+      <div class="main">
+        <div v-for="item in listRef" :key="item.source" class="item">
+          <div class="source">
+            {{ item.source }}
+          </div>
+          <div class="icon">
+            <IconComp type="jiantou_xiangyou"></IconComp>
+          </div>
+          <div class="upload">
+            <UploadComp
+              v-model="item.file"
+              :config="{
+                apiUrl: handleUpload,
+                fileSize: 10,
+                multiple: false,
+                type: ['image/jpeg', 'image/png'],
+              }"
+            ></UploadComp>
+          </div>
         </div>
       </div>
     </AModal>
@@ -98,14 +100,23 @@ const onOk = () => {
 </script>
 
 <style lang="less" scoped>
+.main {
+  max-height: 500px;
+  overflow: auto;
+}
 .item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 140px;
   overflow: hidden;
+
+  .source {
+    width: 1px;
+  }
   div {
-    flex: 1;
+    flex: 1 1 0;
+    flex-wrap: wrap;
   }
   .icon {
     display: flex;

@@ -174,6 +174,7 @@ const beforeUpload = (file: File) => {
  */
 const customRequest = async (option: UploadRequestOption) => {
   try {
+    console.log('option.file', option.file);
     const res = await mergedConfigRef.value.apiUrl(option.file as File);
     if (res.code !== 200) {
       message.error('文件上传失败');

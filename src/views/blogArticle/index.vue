@@ -440,6 +440,7 @@ const visibleImageRef = ref<boolean>(false);
 const imgUrlRef = ref<string[]>([]);
 
 const handleUpload = async (file: File): Promise<UploadResponseType> => {
+  console.log('file', file);
   const res = await upload(file);
 
   return {
