@@ -278,7 +278,6 @@ const config = createTableConfig<ArticleRequestType, ArticleList>({
         placeholder: '请选择分类',
         labelkey: 'name',
         valueKey: 'id',
-        multiple: true,
         defaultSelectOption: [],
         beforeRequest: (param: RemoteSearchSelectParamType) => {
           return {
