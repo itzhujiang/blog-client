@@ -11,8 +11,9 @@
       style="width: 100%"
       :mode="config.multiple ? 'multiple' : undefined"
       :options="optionsRef"
-      :filter-option="onSearch"
+      :filter-option="false"
       @focus="onSelectFocus"
+      @search="onSearch"
       @blur="onSelectBlur"
       @popupScroll="onPopupScroll"
     >
@@ -121,9 +122,11 @@ const getRequestFn = (params: RequestType<Record<string, unknown>>) => {
  * @param input 搜索值
  */
 const onSearch = async (input: string) => {
-  console.log('进入了', input);
-
-  await handleRequestFn(input);
+  isNextRequestRef.value = true;
+  params.page = 1;
+  params.size = 10;
+  optionsRef.value = [];
+  await handleRequestFn(input, true);
 };
 /** 处理下拉聚焦 */
 const onSelectFocus = () => {

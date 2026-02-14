@@ -37,6 +37,7 @@ import {
   PreviewDialogComp,
   type UploadModelValueType,
   switchType,
+  type RemoteSearchSelectParamType,
 } from '@/components/Comp/index';
 import FileSelectComp from '@/components/FileSelect/index.vue';
 import { FILE_DOMAIN } from '@/utils/constants';
@@ -186,6 +187,12 @@ const PopUpFormConfig = <T extends 'add' | 'edit'>(
             valueKey: 'id',
             multiple: true,
             defaultSelectOption: data.categories,
+            beforeRequest: (param: RemoteSearchSelectParamType) => {
+              return {
+                ...param,
+                name: param.query,
+              };
+            },
             afterResponse: (data: CategoryList[], totalData: CategoryList[], total: number) => {
               const isNextRequest = totalData.length + data.length < total;
               return {
@@ -273,6 +280,12 @@ const config = createTableConfig<ArticleRequestType, ArticleList>({
         valueKey: 'id',
         multiple: true,
         defaultSelectOption: [],
+        beforeRequest: (param: RemoteSearchSelectParamType) => {
+          return {
+            ...param,
+            name: param.query,
+          };
+        },
         afterResponse: (data: CategoryList[], totalData: CategoryList[], total: number) => {
           const isNextRequest = totalData.length + data.length < total;
           return {

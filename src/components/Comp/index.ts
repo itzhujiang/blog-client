@@ -6,6 +6,7 @@ import RemoteSearchSelectComp from './remoteSearchSelect/index.vue';
 import TableComp from './table/index.vue';
 import SearchComp from './table/tableSearch/index.vue';
 import UploadComp from './upload/index.vue';
+import type { ParamsType } from './utils/remoteSearchSelectType';
 import type { TableSearch } from './utils/searchTypes';
 import type { TableConfig, RequestType, ResponseType, ResponseFormatType } from './utils/tableType';
 import type {
@@ -44,4 +45,5 @@ export type {
   ResponseFormatType,
   UploadModelValueType,
   UploadResponseType,
+  ParamsType as RemoteSearchSelectParamType,
 };
