@@ -49,6 +49,35 @@ defineOptions({
 
 let previousurl = '';
 
+const getArticleContentUrl = (url: string) => {
+  if (!url) {
+    return '';
+  }
+  if (/^(blob:|https?:\/\/)/.test(url)) {
+    return url;
+  }
+  return FILE_DOMAIN + url;
+};
+
+const handleLocalMdUpload = async (file: File): Promise<UploadResponseType> => {
+  return {
+    code: 200,
+    data: {
+      code: '',
+      size: file.size,
+      url: URL.createObjectURL(file),
+    },
+    msg: '成功',
+  };
+};
+
+const createMdObjectUrl = (content: string) => {
+  if (!content) {
+    return '';
+  }
+  return URL.createObjectURL(new Blob([content], { type: 'text/markdown;charset=utf-8' }));
+};
+
 const PopUpFormConfig = <T extends 'add' | 'edit'>(
   type: T,
   data: Omit<ArticleList, 'authorName' | 'readingTime' | 'viewCount' | 'status' | 'publishedAt'>,
@@ -74,11 +103,11 @@ const PopUpFormConfig = <T extends 'add' | 'edit'>(
               },
             ]
           : '',
-        articleList: data.fileUrl
+        articleList: data.content
           ? [
               {
                 code: '',
-                url: data.fileUrl,
+                url: createMdObjectUrl(data.content),
               },
             ]
           : '',
@@ -144,10 +173,10 @@ const PopUpFormConfig = <T extends 'add' | 'edit'>(
           config: {
             type: ['md'],
             fileSize: 10,
-            apiUrl: handleUpload,
+            apiUrl: handleLocalMdUpload,
             multiple: false,
             onPreview: async (value: { code: string; url: string }) => {
-              const analysisContent = await analysisMd(FILE_DOMAIN + value.url);
+              const analysisContent = await analysisMd(getArticleContentUrl(value.url));
               previewDialogCompRef.value?.open({
                 title: '文章预览',
                 content: analysisContent.mdhtml,
@@ -208,7 +237,7 @@ const PopUpFormConfig = <T extends 'add' | 'edit'>(
         const url =
           data.articleList && Array.isArray(data.articleList) ? data.articleList[0]?.url : '';
         if (url !== previousurl) {
-          const analysisContent = await analysisMd(FILE_DOMAIN + url);
+          const analysisContent = await analysisMd(getArticleContentUrl(url));
           data.attachmentListComp = analysisContent.urls.map(item => {
             return {
               source: item,
@@ -220,16 +249,17 @@ const PopUpFormConfig = <T extends 'add' | 'edit'>(
       },
     }),
     api: type === 'add' ? addArticle : editArticle,
-    beforeRequest: data => {
+    beforeRequest: async data => {
       if (data.thumbnailList && Array.isArray(data.thumbnailList) && data.thumbnailList[0].code) {
         data.thumbnailCode = data.thumbnailList[0].code;
         if (type === 'edit') {
           data.isUpdateThumbnail = true;
         }
       }
-      if (data.articleList && Array.isArray(data.articleList) && data.articleList[0].code) {
-        data.articleCode = data.articleList[0].code;
-        if (type === 'edit') {
+      if (data.articleList && Array.isArray(data.articleList) && data.articleList[0].url) {
+        const analysisContent = await analysisMd(getArticleContentUrl(data.articleList[0].url));
+        data.content = analysisContent.content;
+        if (data.articleList[0].code && type === 'edit') {
           data.isUpdateArticle = true;
         }
         if (data.attachmentListComp && Array.isArray(data.attachmentListComp)) {
@@ -313,7 +343,7 @@ const config = createTableConfig<ArticleRequestType, ArticleList>({
               title: '',
               slug: '',
               thumbnailUrl: '',
-              fileUrl: '',
+              content: '',
               attachmentUrlArr: [],
               categories: [],
               excerpt: '',
@@ -350,16 +380,15 @@ const config = createTableConfig<ArticleRequestType, ArticleList>({
     },
     {
       title: '文章内容',
-      dataIndex: 'fileUrl',
+      dataIndex: 'content',
       xtype: 'render',
       render: () => {
         return `<a>查看</a>`;
       },
       onClick: async value => {
-        const analysisContent = await analysisMd(FILE_DOMAIN + value);
         previewDialogCompRef.value?.open({
           title: '文章预览',
-          content: analysisContent.mdhtml,
+          content: value as string,
         });
       },
     },
@@ -410,7 +439,7 @@ const config = createTableConfig<ArticleRequestType, ArticleList>({
               slug: row.slug,
               thumbnailUrl: row.thumbnailUrl,
               attachmentUrlArr: row.attachmentUrlArr,
-              fileUrl: row.fileUrl,
+              content: row.content,
               categories: row.categories,
               excerpt: row.excerpt,
               id: row.id,

@@ -3,9 +3,9 @@ import { marked } from 'marked';
 /**
  * 解析md文件
  * @param url - Markdown文件的URL地址
- * @returns Promise<{ mdhtml: string; urls: string[] }> - 返回包含HTML和媒体URL数组的对象
+ * @returns Promise<{ mdhtml: string; urls: string[]; content: string }> - 返回包含HTML、原始内容和媒体URL数组的对象
  */
-export async function analysisMd(url: string): Promise<{ mdhtml: string; urls: string[] }> {
+export async function analysisMd(url: string): Promise<{ mdhtml: string; urls: string[]; content: string }> {
   try {
     // 1. 从URL获取Markdown内容
     const response = await fetch(url);
@@ -53,9 +53,10 @@ export async function analysisMd(url: string): Promise<{ mdhtml: string; urls: s
       }
     }
 
-    // 返回HTML和去重后的URL数组
+    // 返回HTML、原始内容和去重后的URL数组
     return {
       mdhtml,
+      content: markdownContent,
       urls: Array.from(new Set(urls)),
     };
   } catch (error) {

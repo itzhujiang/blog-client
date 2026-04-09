@@ -40,8 +40,8 @@ export type ArticleList = {
   status: ArticleStatus;
   /** 发布时间 */
   publishedAt: number;
-  /** 文章url */
-  fileUrl: string;
+  /** 文章内容 */
+  content: string;
   /** 附件url数组 */
   attachmentUrlArr: string[];
   /** 分类信息 */
@@ -62,8 +62,8 @@ export type AddArticleRequestType = {
   thumbnailCode?: string;
   /** 文章摘要 */
   excerpt: string;
-  /** 文章内容code */
-  articleCode: string;
+  /** 文章内容 */
+  content: string;
   /** 附件code数组 */
   attachmentList?: {
     code: string;
