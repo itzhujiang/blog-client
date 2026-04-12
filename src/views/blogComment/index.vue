@@ -21,11 +21,17 @@ import { ref } from 'vue';
 import {
   delComment,
   getCommentsList,
+  replyComment,
   reviewComment,
   type CommentList,
   type CommentListRequestType,
 } from '@/api/blog/comment';
-import { TableComp, createTableConfig, PreviewDialogComp } from '@/components/Comp/index';
+import {
+  TableComp,
+  createTableConfig,
+  PreviewDialogComp,
+  switchType,
+} from '@/components/Comp/index';
 import { COMMENT_STATUS_MAP, COMMENT_STATUS_OPTION } from '@/utils/constants';
 
 defineOptions({
@@ -91,18 +97,6 @@ const config = createTableConfig<CommentListRequestType, CommentList>({
       xtype: 'text',
     },
     {
-      title: '头像',
-      dataIndex: 'authorUrl',
-      xtype: 'render',
-      render: () => {
-        return `<a>查看</a>`;
-      },
-      onClick: data => {
-        imgUrlRef.value = data as string;
-        visibleImageRef.value = true;
-      },
-    },
-    {
       title: '文章id',
       dataIndex: 'articleId',
       xtype: 'text',
@@ -146,7 +140,7 @@ const config = createTableConfig<CommentListRequestType, CommentList>({
       isShow: row => {
         return row.status === 'pending';
       },
-      onClick: (row, _data, comp) => {
+      onClick: (row, _data, comp, tableMethod) => {
         comp.open({
           title: '审核',
           data: {
@@ -164,13 +158,26 @@ const config = createTableConfig<CommentListRequestType, CommentList>({
             },
           ],
           api: reviewComment,
+          afterResponse: res => {
+            if (res.code === 200) {
+              tableMethod.refresh();
+            }
+            return {
+              isMsg: true,
+              msg: res.msg,
+              type: switchType(res.code),
+            };
+          },
         });
       },
     },
     {
       label: '删除',
+      isShow: row => {
+        return row.status !== 'trash';
+      },
       danger: true,
-      onClick: row => {
+      onClick: (row, _data, _comp, tableMethod) => {
         Modal.confirm({
           title: '删除',
           content: `确认删除 ${row.id} 吗？`,
@@ -179,12 +186,47 @@ const config = createTableConfig<CommentListRequestType, CommentList>({
               const res = await delComment({ id: row.id });
               if (res.code === 200) {
                 message.success('删除成功');
+                console.log(tableMethod);
+                tableMethod.refresh();
               } else if (res.code === 500) {
                 message.error(res.msg);
               }
             } catch (error) {
               console.error(error);
             }
+          },
+        });
+      },
+    },
+    {
+      label: '回复',
+      isShow: row => {
+        return row.status === 'approved';
+      },
+      onClick: (row, _data, comp, tableMethod) => {
+        comp.open({
+          title: '回复',
+          data: {
+            id: row.id,
+            content: '',
+          },
+          columns: [
+            {
+              label: '评论内容',
+              type: 'textarea',
+              dataIndex: 'content',
+            },
+          ],
+          api: replyComment,
+          afterResponse: res => {
+            if (res.code === 200) {
+              tableMethod.refresh();
+            }
+            return {
+              isMsg: true,
+              msg: res.msg,
+              type: switchType(res.code),
+            };
           },
         });
       },

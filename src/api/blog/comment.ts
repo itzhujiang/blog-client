@@ -87,3 +87,30 @@ export const delComment = async (params: DelCommentRequestType) =>
   await instance.delete<DelCommentRequestType, null, 'obj'>('/api/blog/comment/delComment', {
     params,
   });
+
+export type PublishAuthorCommentRequestType = {
+  /** 文章id */
+  articleId: number;
+  /** 评论内容 */
+  content: string;
+};
+
+/**
+ * 发布作者评论
+ * @param data
+ * @returns
+ */
+export const publishAuthorComment = async (data: PublishAuthorCommentRequestType) =>
+  await instance.post<PublishAuthorCommentRequestType, null, 'obj'>(
+    '/api/blog/comment/publishAuthorComment',
+    data
+  );
+
+export type replyCommentRequestType = {
+  /** 评论id */
+  id: number;
+  /** 回复内容 */
+  content: string;
+};
+export const replyComment = async (data: replyCommentRequestType) =>
+  await instance.post<replyCommentRequestType, null, 'obj'>('/api/blog/comment/replyComment', data);

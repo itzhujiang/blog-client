@@ -47,7 +47,6 @@ declare module 'vue' {
     PopUpFormBox: typeof import('./src/components/Comp/popUpFormBox/index.vue')['default']
     Preview: typeof import('./src/components/Comp/upload/components/Preview.vue')['default']
     PreviewDialog: typeof import('./src/components/Comp/previewDialog/index.vue')['default']
-    PullToLoadSelect: typeof import('./src/components/Comp/pullToLoadSelect/index.vue')['default']
     RemoteSearchSelect: typeof import('./src/components/Comp/remoteSearchSelect/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

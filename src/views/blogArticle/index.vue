@@ -25,6 +25,7 @@ import { ref } from 'vue';
 import type { ArticleRequestType, ArticleList } from '@/api/blog/article';
 import { getArticleList, addArticle, editArticle, delArticle } from '@/api/blog/article';
 import { getCategoryList, type CategoryList } from '@/api/blog/category';
+import { publishAuthorComment } from '@/api/blog/comment';
 import { upload } from '@/api/blog/upload';
 import {
   TableComp,
@@ -430,7 +431,6 @@ const config = createTableConfig<ArticleRequestType, ArticleList>({
       label: '修改',
       onClick: (row, _data, comp, tableMethod) => {
         console.log('row.categories', row.categories);
-
         comp.open(
           PopUpFormConfig<'edit'>(
             'edit',
@@ -470,6 +470,47 @@ const config = createTableConfig<ArticleRequestType, ArticleList>({
             }
           },
         });
+      },
+    },
+    {
+      label: '发布评论',
+      ghost: true,
+      onClick: (row, _data, comp, tableMethod) => {
+        comp.open(
+          createPopUpFormConfig({
+            title: '发布评论',
+            labelCol: {
+              span: 6,
+            },
+            ...createFormConfig({
+              data: {
+                articleId: row.id,
+                content: '',
+              },
+              columns: [
+                {
+                  label: '评论内容',
+                  type: 'textarea',
+                  dataIndex: 'content',
+                  placeholder: '请输入评论内容',
+                  rules: [{ required: true, message: '请输入评论内容' }],
+                },
+              ],
+            }),
+            api: publishAuthorComment,
+            afterResponse: res => {
+              if (res.code === 200) {
+                message.success('评论发布成功');
+                tableMethod.refresh();
+              } else {
+                message.error(res.msg);
+              }
+              return {
+                isMsg: false,
+              };
+            },
+          })
+        );
       },
     },
   ],
